@@ -1,0 +1,36 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: taskmasterdb
+  labels:
+    app: taskmasterdb
+spec:
+  containers:
+    - name: appcontainer
+      image: taskmaster_db
+      volumeMounts:
+        - mountPath: /var/lib/mysql
+          name: dbvol
+      ports:
+        - name: vprodb-port
+          containerPort: 3306
+  volumes:
+    - name: dbvol
+      hostPath:
+        path: /data
+        type: Directory
+
+---
+apiVersion: v1
+kind:  Service
+metadata:
+  name: vprodb-service
+spec:
+  selector:
+    app: vprodb
+  ports:
+    - name: mysql-port
+      protocol: TCP
+      port: 3306
+      targetPort: vprodb-port
