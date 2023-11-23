@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: taskmaster_db
+  name: tmdb
   labels:
     app: taskmaster_db
 spec:
