@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        MINIKUBE_IP = sh(script: 'minikube ip', returnStdout: true).trim()
+        MINIKUBE_IP = '192.168.59.101'
     }
 
     stages {
@@ -19,9 +19,9 @@ pipeline {
                     docker.withRegistry('') {
                         dockerImage.save("taskmaster_db:latest").withTar {
                             tar -> node("${MINIKUBE_IP}") {
-                                sh "scp ${tar} ${MINIKUBE_IP}:/tmp/" 
+                                sh "scp -i ~/.ssh/minikube_id_rsa ${tar} docker@${MINIKUBE_IP}:/tmp/" 
                             }
-                            sh "ssh ${MINIKUBE_IP} docker load -i /tmp/${tar}"
+                            sh "ssh -i ~/.ssh/minikube_id_rsa docker@${MINIKUBE_IP} docker load -i /tmp/${tar}"
                         }
                     }
                     sh "kubectl apply -f taskmaster_db.yaml"

@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS users (
 );
 
 -- Create another table called 'orders'
-CREATE TABLE IF NOT EXISTS orders (
+CREATE TABLE IF NOT EXISTS tasks (
     task_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT,
     task_name VARCHAR(100) NOT NULL,
