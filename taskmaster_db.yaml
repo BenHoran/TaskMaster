@@ -2,35 +2,35 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: taskmasterdb
+  name: taskmaster_db
   labels:
-    app: taskmasterdb
+    app: taskmaster_db
 spec:
   containers:
     - name: appcontainer
-      image: taskmaster_db
-      volumeMounts:
-        - mountPath: /var/lib/mysql
-          name: dbvol
+      image: taskmaster_db:lastest
+      # volumeMounts:
+      #   - mountPath: /var/lib/mysql
+      #     name: dbvol
       ports:
-        - name: vprodb-port
+        - name: taskmaster_db-port
           containerPort: 3306
-  volumes:
-    - name: dbvol
-      hostPath:
-        path: /data
-        type: Directory
+  # volumes:
+  #   - name: dbvol
+  #     hostPath:
+  #       path: /data
+  #       type: Directory
 
 ---
 apiVersion: v1
 kind:  Service
 metadata:
-  name: vprodb-service
+  name: taskmaster_db-service
 spec:
   selector:
-    app: vprodb
+    app: taskmaster_db
   ports:
     - name: mysql-port
       protocol: TCP
       port: 3306
-      targetPort: vprodb-port
+      targetPort: taskmaster_db-port

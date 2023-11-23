@@ -24,7 +24,7 @@ pipeline {
                         sh "scp -i ~/.ssh/minikube_id_rsa ${container}.tar docker@${MINIKUBE_IP}:/tmp/" 
                         sh "ssh -i ~/.ssh/minikube_id_rsa docker@${MINIKUBE_IP} docker load -i /tmp/${container}.tar"
                     }
-                    sh "kubectl apply -f taskmaster_db.yaml"
+                    sh "kubectl apply -f taskmaster_db.yaml --image-pull-policy=Never"
                 }
             }
         }
