@@ -8,13 +8,15 @@ metadata:
 spec:
   containers:
     - name: appcontainer
-      image: taskmaster_db:lastest
+      image: docker.io/library/taskmaster_db:latest
       # volumeMounts:
       #   - mountPath: /var/lib/mysql
       #     name: dbvol
       ports:
         - name: taskmaster_db-port
           containerPort: 3306
+  imagePullPolicy:
+    - name: Never
   # volumes:
   #   - name: dbvol
   #     hostPath:
@@ -23,7 +25,7 @@ spec:
 
 ---
 apiVersion: v1
-kind:  Service
+kind: Service
 metadata:
   name: taskmaster_db-service
 spec:
