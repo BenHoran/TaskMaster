@@ -8,7 +8,7 @@ metadata:
 spec:
   containers:
     - name: appcontainer
-      image: docker.io/library/taskmaster_db:latest
+      image: localhost:5000/taskmaster_db:latest
       # volumeMounts:
       #   - mountPath: /var/lib/mysql
       #     name: dbvol
