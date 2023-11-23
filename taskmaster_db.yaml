@@ -13,10 +13,9 @@ spec:
       #   - mountPath: /var/lib/mysql
       #     name: dbvol
       ports:
-        - name: taskmaster_db-port
+        - name: taskmasterdb-port
           containerPort: 3306
-  imagePullPolicy:
-    - name: Never
+  imagePullPolicy: Never
   # volumes:
   #   - name: dbvol
   #     hostPath:
@@ -27,7 +26,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: taskmaster_db-service
+  name: taskmasterdb-service
 spec:
   selector:
     app: taskmaster_db
@@ -35,4 +34,4 @@ spec:
     - name: mysql-port
       protocol: TCP
       port: 3306
-      targetPort: taskmaster_db-port
+      targetPort: taskmasterdb-port
