@@ -19,8 +19,8 @@ pipeline {
             steps {
                 script {
                     docker.withRegistry('') {
-                        dockerImage.save("taskmaster_db:latest").withTar {
-                            tar -> node("${MINIKUBE_IP}") {
+                        dockerImage.save("taskmaster_db:latest").withTar { tar -> 
+                            node(${MINIKUBE_IP}) {
                                 sh "scp -i ~/.ssh/minikube_id_rsa ${tar} docker@${MINIKUBE_IP}:/tmp/" 
                             }
                             sh "ssh -i ~/.ssh/minikube_id_rsa docker@${MINIKUBE_IP} docker load -i /tmp/${tar}"
