@@ -10,7 +10,7 @@ pipeline {
             steps {
                 dir('docker/mysql') {
                     script {
-                        dockerImage = docker.build( "taskmaster_db", ".")
+                        dockerImage = docker.build( "taskmaster_db:${env.BUILD_ID}", ".")
                     }
                 }
             }
@@ -20,7 +20,7 @@ pipeline {
                 script {
                     docker.withRegistry('localhost:5000') {
                         container = "taskmaster_db"
-                        dockerImage.push("$BUILDNUMBER")
+                        dockerImage.push("${env.BUILD_ID}")
                         dockerImage.push("latest")
                     }
                     sh "kubectl apply -f taskmaster_db.yaml"
