@@ -18,7 +18,7 @@ pipeline {
         stage('Deploy to K8') {
             steps {
                 script {
-                    docker.withRegistry('localhost:5000') {
+                    docker.withRegistry('https://localhost:5000') {
                         container = "taskmaster_db"
                         dockerImage.push("${env.BUILD_ID}")
                         dockerImage.push("latest")
