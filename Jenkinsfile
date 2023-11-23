@@ -18,11 +18,10 @@ pipeline {
         stage('Deploy to K8') {
             steps {
                 script {
-                    docker.withRegistry('') {
+                    docker.withRegistry('localhost:5000') {
                         container = "taskmaster_db"
-                        sh "docker save -o ${container}.tar ${container}"
-                        sh "scp -i ~/.ssh/minikube_id_rsa ${container}.tar docker@${MINIKUBE_IP}:/tmp/" 
-                        sh "ssh -i ~/.ssh/minikube_id_rsa docker@${MINIKUBE_IP} docker load -i /tmp/${container}.tar"
+                        dockerImage.push("$BUILDNUMBER")
+                        dockerImage.push("latest")
                     }
                     sh "kubectl apply -f taskmaster_db.yaml"
                 }
