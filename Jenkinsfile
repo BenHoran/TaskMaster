@@ -18,11 +18,8 @@ pipeline {
         stage('Deploy to K8') {
             steps {
                 script {
-                    sh 'whoami'
-                    sh 'pwd'
-                    sh "ssh -i ~/.ssh/minikube_id_rsa docker@${MINIKUBE_IP} ls /tmp/"
-                    sh "kubectl get pods -A"
                     docker.withRegistry('') {
+                        dockerImage.save("taskmaster.tar", "taskmaster_db:latest")
                         dockerImage.save("taskmaster_db:latest").withTar { tar -> 
                             sh "scp -i ~/.ssh/minikube_id_rsa ${tar} docker@${MINIKUBE_IP}:/tmp/" 
                             sh "ssh -i ~/.ssh/minikube_id_rsa docker@${MINIKUBE_IP} docker load -i /tmp/${tar}"
