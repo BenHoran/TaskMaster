@@ -21,8 +21,8 @@ pipeline {
                     docker.withRegistry('') {
                         container = "taskmaster_db"
                         sh "docker save -o ${container}.tar ${container}"
-                        sh "scp -i ~/.ssh/minikube_id_rsa ${tar} docker@${MINIKUBE_IP}:/tmp/" 
-                        sh "ssh -i ~/.ssh/minikube_id_rsa docker@${MINIKUBE_IP} docker load -i /tmp/${tar}"
+                        sh "scp -i ~/.ssh/minikube_id_rsa ${container} docker@${MINIKUBE_IP}:/tmp/" 
+                        sh "ssh -i ~/.ssh/minikube_id_rsa docker@${MINIKUBE_IP} docker load -i /tmp/${container}"
                     }
                     sh "kubectl apply -f taskmaster_db.yaml"
                 }
