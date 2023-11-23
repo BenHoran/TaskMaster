@@ -9,7 +9,9 @@ pipeline {
         stage('Build Task Master Images') {
             steps {
                 script {
-                    dockerImage = docker.build( "taskmaster_db", "-f ./docker/mysql/ .")
+                    dir('.docker/mysql') {
+                        dockerImage = docker.build( "taskmaster_db", ".", ".")
+                    }
                 }
             }
         }
