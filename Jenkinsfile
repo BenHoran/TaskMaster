@@ -12,7 +12,7 @@ pipeline {
                 dir('docker/mysql') {
                     script {
                         dockerImage = docker.build( "taskmaster_db:${env.BUILD_ID}", ".")
-                    }:withRegistry
+                    }
                 }
             }
         }
