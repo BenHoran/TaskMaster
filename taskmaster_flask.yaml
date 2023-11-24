@@ -1,0 +1,28 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: tmflask
+  labels:
+    app: taskmaster_flask
+spec:
+  containers:
+    - name: appcontainer
+      image: 192.168.33.30:5000/taskmaster_flask:latest
+      ports:
+        - name: tmflask-port
+          containerPort: 5000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tmflask-service
+spec:
+  selector:
+    app: taskmaster_flask
+  ports:
+    - name: flask-port
+      protocol: TCP
+      port: 5000
+      targetPort: tmflask-port

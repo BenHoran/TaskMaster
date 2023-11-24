@@ -1,10 +1,11 @@
 FROM python:3
 
-WORKDIR /usr/src/app
+RUN pip install pipenv
 
-COPY ../../backend/requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.ext
+ENV PROJECT_DIR /app
+COPY ../../backend/ ${PROJECT_DIR}
+WORKDIR ${PROJECT_DIR}
 
-COPY ../../backend/server.py .
+RUN pipenv install --system --deploy
 
-CMD ["python", "server.py"]
+CMD ["pipenv", "run", "flask", "--app", "server", "run", "-h", "0.0.0.0"]

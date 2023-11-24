@@ -3,6 +3,7 @@ pipeline {
 
     environment {
         MINIKUBE_IP = '192.168.59.101'
+        LOCAL_REPO = '192.168.33.30'
     }
 
     stages {
@@ -14,16 +15,31 @@ pipeline {
                     }
                 }
             }
+            steps {
+                dir('docker/flask') {
+                    script {
+                        dockerImage = docker.build( "taskmaster_flask:${env.BUILD_ID}", ".")
+                    }
+                }
+            }
         }
         stage('Deploy to K8') {
             steps {
                 script {
-                    docker.withRegistry('https://localhost:5000') {
+                    docker.withRegistry("https://${LOCAL_REPO}:5000") {
                         container = "taskmaster_db"
                         dockerImage.push("${env.BUILD_ID}")
                         dockerImage.push("latest")
                     }
                     sh "kubectl apply -f taskmaster_db.yaml"
+                }
+                script {
+                    docker.withRegistry("https://${LOCAL_REPO}:5000") {
+                        container = "taskmaster_flask"
+                        dockerImage.push("${env.BUILD_ID}")
+                        dockerImage.push("latest")
+                    }
+                    sh "kubectl apply -f taskmaster_flask.yaml"
                 }
             }
         }
