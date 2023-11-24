@@ -7,7 +7,7 @@ pipeline {
     }
 
     stages {
-        stage('Build Task Master Images') {
+        stage('Build Mysql Container') {
             steps {
                 dir('docker/mysql') {
                     script {
@@ -15,6 +15,8 @@ pipeline {
                     }
                 }
             }
+        }
+        stage('Build Flask Container') {
             steps {
                 dir('docker/flask') {
                     script {
@@ -23,7 +25,7 @@ pipeline {
                 }
             }
         }
-        stage('Deploy to K8') {
+        stage('Deploy Mysql to K8') {
             steps {
                 script {
                     docker.withRegistry("https://${LOCAL_REPO}:5000") {
@@ -33,6 +35,10 @@ pipeline {
                     }
                     sh "kubectl apply -f taskmaster_db.yaml"
                 }
+            }
+        }
+        stage('Deploy Flask to K8') {
+            steps {
                 script {
                     docker.withRegistry("https://${LOCAL_REPO}:5000") {
                         container = "taskmaster_flask"
