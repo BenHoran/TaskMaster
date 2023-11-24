@@ -12,13 +12,13 @@ pipeline {
                 dir('docker/mysql') {
                     script {
                         dockerImage = docker.build( "taskmaster_db:${env.BUILD_ID}", ".")
-                    }
+                    }:withRegistry
                 }
             }
         }
         stage('Build Flask Container') {
             steps {
-                dir('docker/flask') {
+                dir('backend') {
                     script {
                         dockerImage = docker.build( "taskmaster_flask:${env.BUILD_ID}", ".")
                     }
