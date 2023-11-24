@@ -3,7 +3,7 @@ FROM python:3
 RUN pip install pipenv
 
 ENV PROJECT_DIR /app
-COPY ../../backend/ ${PROJECT_DIR}
+COPY . ${PROJECT_DIR}
 WORKDIR ${PROJECT_DIR}
 
 RUN pipenv install --system --deploy
