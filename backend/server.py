@@ -5,26 +5,29 @@ from flask_httpauth import HTTPBasicAuth
 from datetime import timedelta
 from dotenv import load_dotenv
 
+from database_manager import DatabaseManager
+
 app = Flask(__name__)
+load_dotenv()
+username = str(os.getenv('MYSQL_USER'))
+password = str(os.getenv('MYSQL_PASS'))
+host = str(os.getenv('MYSQL_HOST'))
+port = str(os.getenv('MYSQL_PORT'))
+database = str(os.getenv('MYSQL_DB'))
+app.config['JWT_SECRET_KEY'] = str(os.getenv('JWT_SECRET_KEY'))
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=5)
 jwt = JWTManager(app)
 auth = HTTPBasicAuth()
 
-# Simulated user database (replace with your actual user database)
-users = {
-    'user1': 'password1',
-    'user2': 'password2',
-}
 
 @auth.verify_password
-def verify_password(username, password):
-    if username in users and users[username] == password:
-        return username
+def verify_password(login, passwd):
+    # Replace these values with your actual database information
+    db_manager = DatabaseManager(username=username, password=password, host=host, port=port, database=database)
+    if db_manager.authenticate_user(login, passwd):
+        return True
     else:
         return False
-
-@app.route('/')
-def home():
-    return "Welcome to the main page!"
 
 @app.route('/protected')
 @jwt_required()  # Requires JWT token for access
@@ -45,13 +48,22 @@ def logout():
     unset_jwt_cookies(response)
     return response
 
-@auth.error_handler
-def auth_error():
-    return jsonify({'error': 'Authentication failed'}), 401
+# Custom error handler for JWT token validation failures
+@jwt.expired_token_loader
+def expired_token_callback(expired_token):
+    return jsonify({'error': 'Token has expired'}), 401
 
+@jwt.invalid_token_loader
+def invalid_token_callback(error):
+    return jsonify({'error': 'Invalid token'}), 401
+
+@jwt.unauthorized_loader
+def unauthorized_callback(error):
+    return jsonify({'error': 'Failed to authenticate. Check your credentials'}), 401
+
+@auth.error_handler
+def unauthorized():
+    return jsonify({'error': 'Failed to authenticate. Check your credentials'}), 418
 
 if __name__ == '__main__':
-    load_dotenv()
-    app.config['JWT_SECRET_KEY'] = str(os.getenv('JWT_SECRET_KEY'))
-    app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=5)
     app.run()
