@@ -10,11 +10,11 @@ pipeline {
         stage('Flask Unit Tests') {
             steps {
                 dir('backend') {
-                    sh '
+                    sh '''
                         pip install pipenv
                         pipenv install --system --deploy
                         pytest
-                    ' 
+                    '''
                 }
             }
         }
