@@ -11,8 +11,8 @@ pipeline {
             steps {
                 dir('backend') {
                     sh '''
-                        pipenv install --system --deploy
-                        pytest
+                        pipenv install 
+                        pipenv run pytest
                     '''
                 }
             }
