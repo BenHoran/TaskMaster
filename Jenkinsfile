@@ -7,6 +7,17 @@ pipeline {
     }
 
     stages {
+        stage('Flask Unit Tests') {
+            steps {
+                dir('backend') {
+                    sh '
+                        pip install pipenv
+                        pipenv install --system --deploy
+                        pytest
+                    ' 
+                }
+            }
+        }
         stage('Build Mysql Container') {
             steps {
                 dir('docker/mysql') {
