@@ -1,6 +1,6 @@
 import os
 from flask import Flask, jsonify
-from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity, unset_jwt_cookies
+from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity, unset_jwt_cookies 
 from flask_httpauth import HTTPBasicAuth
 from datetime import timedelta
 from dotenv import load_dotenv
@@ -63,7 +63,7 @@ def unauthorized_callback(error):
 
 @auth.error_handler
 def unauthorized():
-    return jsonify({'error': 'Failed to authenticate. Check your credentials'}), 418
+    return jsonify({'error': 'Failed to authenticate. Check your credentials'}), 401
 
 if __name__ == '__main__':
     app.run()

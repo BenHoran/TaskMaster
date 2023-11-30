@@ -9,9 +9,9 @@ flask-jwt-extended = "*"
 flask-httpauth = "*"
 flask = "*"
 python-dotenv = "*"
-cryptography = "*"
 sqlalchemy = "*"
 mysql-connector-python = "*"
+pytest = "*"
 
 [dev-packages]
 
