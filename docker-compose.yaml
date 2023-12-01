@@ -5,9 +5,10 @@ version: "3.7"
 services:
   tmflask:
     build: ./backend
+    image: taskmaster_flask
     # Note that we are building from our current terminal directory where our Dockerfile is located, we use .
     # naming our resulting container
-    container_name: taskmaster_flask
+    # container_name: taskmaster_flask
     # publishing a port so that external services requesting port 8000 on your local machine
     # are mapped to port 8000 on our container
     ports:
@@ -16,13 +17,15 @@ services:
   tmreact: 
     # Since our Dockerfile for web-server is located in react-app foler, our build context is ./react-app
     build: ./frontend 
-    container_name: taskmaster_react
+    image: taskmaster_react
+    # container_name: taskmaster_react
     ports:
       - "8080:8080"
 
   tmdb: 
     # Since our Dockerfile for web-server is located in react-app foler, our build context is ./react-app
     build: ./docker/mysql
-    container_name: taskmaster_db
+    image: taskmaster_db
+    # container_name: taskmaster_db
     ports:
       - "3306:3306"
