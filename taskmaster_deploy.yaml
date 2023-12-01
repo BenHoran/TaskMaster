@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: taskmaster-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: taskmaster-app
+  template:
+    metadata:
+      labels:
+        app: taskmaster-app
+    spec:
+      containers:
+      - name: tmflask
+        image: 192.168.33.30:5000/taskmaster_flask:latest
+        ports:
+          - name: tmflask-port
+            containerPort: 5000
+      - name: tmdb
+        image: 192.168.33.30:5000/taskmaster_db:latest
+        ports:
+          - name: tmdb-port
+            containerPort: 3306
+      - name: tmreact
+        image: 192.168.33.30:5000/taskmaster_react:latest
+        ports:
+          - name: tmreact-port
+            containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-service
+spec:
+  selector:
+    app: taskmaster-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: tmflask-port
+  type: LoadBalancer  # This line exposes the service externally

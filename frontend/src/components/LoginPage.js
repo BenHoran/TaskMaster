@@ -15,7 +15,7 @@ const LoginPage = () => {
     try {
       const basicAuthToken = btoa(`${username}:${password}`);
       const response = await axios.post(
-        "http://tmflask-service:5000/login",
+        "http://tmflask:5000/login",
         {},
         {
           headers: {
