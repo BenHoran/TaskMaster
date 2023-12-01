@@ -19,6 +19,15 @@ pipeline {
         }
         stage('Build Containers') {
             steps {
+                script {
+                        docker.withRegistry("https://${LOCAL_REPO}:5000") {
+                            sh 'docker compose build -f docker-compose.yaml'
+                            sh 'docker push taskmaster_db:latest'
+                            sh 'docker push taskmaster_flask:latest'
+                            sh 'docker push taskmaster_react:latest'
+                        }
+
+                }
                 dir('docker/mysql') {
                     script {
                         dockerImage = docker.build( "taskmaster_db:${env.BUILD_ID}", ".")
@@ -43,7 +52,7 @@ pipeline {
                     script {
                         dockerImage = docker.build( "taskmaster_react:${env.BUILD_ID}", ".")
                         docker.withRegistry("https://${LOCAL_REPO}:5000") {
-                            container = "taskmaster_flask"
+                            container = "taskmaster_react"
                             dockerImage.push("${env.BUILD_ID}")
                             dockerImage.push("latest")
                         }
