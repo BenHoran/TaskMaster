@@ -1,0 +1,29 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: tmreact
+  labels:
+    app: taskmaster_react
+spec:
+  containers:
+    - name: appcontainer
+      image: 192.168.33.30:5000/taskmaster_react:latest
+      ports:
+        - name: tmreact-port
+          containerPort: 3000
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tmreact-service
+spec:
+  selector:
+    app: taskmaster_react
+  ports:
+    - name: react-port
+      protocol: TCP
+      port: 3000
+      targetPort: tmreact-port
+  type: LoadBalancer

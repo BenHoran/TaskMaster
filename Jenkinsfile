@@ -35,6 +35,15 @@ pipeline {
                 }
             }
         }
+        stage('Build React Container') {
+            steps {
+                dir('frontend') {
+                    script {
+                        dockerImage = docker.build( "taskmaster_react:${env.BUILD_ID}", ".")
+                    }
+                }
+            }
+        }
         stage('Deploy Mysql to K8') {
             steps {
                 script {
@@ -56,6 +65,18 @@ pipeline {
                         dockerImage.push("latest")
                     }
                     sh "kubectl apply -f taskmaster_flask.yaml"
+                }
+            }
+        }
+        stage('Deploy Flask to K8') {
+            steps {
+                script {
+                    docker.withRegistry("https://${LOCAL_REPO}:5000") {
+                        container = "taskmaster_react"
+                        dockerImage.push("${env.BUILD_ID}")
+                        dockerImage.push("latest")
+                    }
+                    sh "kubectl apply -f taskmaster_react.yaml"
                 }
             }
         }
