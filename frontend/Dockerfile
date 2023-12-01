@@ -5,6 +5,7 @@ WORKDIR /taskmaster/
 COPY src /taskmaster/src
 COPY public /taskmaster/public
 COPY package.json /taskmaster/
+COPY additional_container_server.conf ./
 
 RUN npm install
 

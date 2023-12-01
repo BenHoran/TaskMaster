@@ -21,43 +21,45 @@ pipeline {
             steps {
                 script {
                         docker.withRegistry("https://${LOCAL_REPO}:5000") {
-                            sh 'docker compose build -f docker-compose.yaml'
-                            sh 'docker push taskmaster_db:latest'
-                            sh 'docker push taskmaster_flask:latest'
-                            sh 'docker push taskmaster_react:latest'
+                            sh "docker compose -f docker-compose.yaml build"
+                            sh "docker push taskmaster_db:latest"
+                            sh "docker push taskmaster_db:${env.BUILD_ID}"
+                            sh "docker push taskmaster_flask:latest"
+                            sh "docker push taskmaster_flask:${env.BUILD_ID}"
+                            sh "docker push taskmaster_react:latest"
+                            sh "docker push taskmaster_react:${env.BUILD_ID}"
                         }
-
                 }
-                dir('docker/mysql') {
-                    script {
-                        dockerImage = docker.build( "taskmaster_db:${env.BUILD_ID}", ".")
-                        docker.withRegistry("https://${LOCAL_REPO}:5000") {
-                            container = "taskmaster_db"
-                            dockerImage.push("${env.BUILD_ID}")
-                            dockerImage.push("latest")
-                        }
-                    }
-                }
-                dir('backend') {
-                    script {
-                        dockerImage = docker.build( "taskmaster_flask:${env.BUILD_ID}", ".")
-                        docker.withRegistry("https://${LOCAL_REPO}:5000") {
-                            container = "taskmaster_flask"
-                            dockerImage.push("${env.BUILD_ID}")
-                            dockerImage.push("latest")
-                        }
-                    }
-                }
-                dir('frontend') {
-                    script {
-                        dockerImage = docker.build( "taskmaster_react:${env.BUILD_ID}", ".")
-                        docker.withRegistry("https://${LOCAL_REPO}:5000") {
-                            container = "taskmaster_react"
-                            dockerImage.push("${env.BUILD_ID}")
-                            dockerImage.push("latest")
-                        }
-                    }
-                }
+                // dir('docker/mysql') {
+                //     script {
+                //         dockerImage = docker.build( "taskmaster_db:${env.BUILD_ID}", ".")
+                //         docker.withRegistry("https://${LOCAL_REPO}:5000") {
+                //             container = "taskmaster_db"
+                //             dockerImage.push("${env.BUILD_ID}")
+                //             dockerImage.push("latest")
+                //         }
+                //     }
+                // }
+                // dir('backend') {
+                //     script {
+                //         dockerImage = docker.build( "taskmaster_flask:${env.BUILD_ID}", ".")
+                //         docker.withRegistry("https://${LOCAL_REPO}:5000") {
+                //             container = "taskmaster_flask"
+                //             dockerImage.push("${env.BUILD_ID}")
+                //             dockerImage.push("latest")
+                //         }
+                //     }
+                // }
+                // dir('frontend') {
+                //     script {
+                //         dockerImage = docker.build( "taskmaster_react:${env.BUILD_ID}", ".")
+                //         docker.withRegistry("https://${LOCAL_REPO}:5000") {
+                //             container = "taskmaster_react"
+                //             dockerImage.push("${env.BUILD_ID}")
+                //             dockerImage.push("latest")
+                //         }
+                //     }
+                // }
             }
         }
         stage('Deploy Mysql to K8') {

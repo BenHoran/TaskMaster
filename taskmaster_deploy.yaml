@@ -27,7 +27,7 @@ spec:
         image: 192.168.33.30:5000/taskmaster_react:latest
         ports:
           - name: tmreact-port
-            containerPort: 3000
+            containerPort: 8080
 ---
 apiVersion: v1
 kind: Service
@@ -38,6 +38,6 @@ spec:
     app: taskmaster-app
   ports:
     - protocol: TCP
-      port: 3000
+      port: 8080
       targetPort: tmreact-port
   type: LoadBalancer  # This line exposes the service externally
