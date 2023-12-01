@@ -12,6 +12,7 @@ python-dotenv = "*"
 sqlalchemy = "*"
 mysql-connector-python = "*"
 pytest = "*"
+flask-cors = "*"
 
 [dev-packages]
 

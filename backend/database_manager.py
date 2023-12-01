@@ -36,7 +36,6 @@ class DatabaseManager:
         # Validate user and password
         user = self.session.query(self.UserTable).filter_by(username=username, userpass=password).first()
 
-        print(user)
         if user:
             return True  # Authentication successful
         else:

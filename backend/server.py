@@ -4,10 +4,13 @@ from flask_jwt_extended import JWTManager, jwt_required, create_access_token, ge
 from flask_httpauth import HTTPBasicAuth
 from datetime import timedelta
 from dotenv import load_dotenv
+from flask_cors import CORS
 
 from database_manager import DatabaseManager
 
 app = Flask(__name__)
+CORS(app)
+
 load_dotenv()
 username = str(os.getenv('MYSQL_USER'))
 password = str(os.getenv('MYSQL_PASS'))
@@ -16,6 +19,7 @@ port = str(os.getenv('MYSQL_PORT'))
 database = str(os.getenv('MYSQL_DB'))
 app.config['JWT_SECRET_KEY'] = str(os.getenv('JWT_SECRET_KEY'))
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=5)
+
 jwt = JWTManager(app)
 auth = HTTPBasicAuth()
 
@@ -40,7 +44,7 @@ def protected():
 def login():
     user = auth.current_user()
     access_token = create_access_token(identity=user, fresh=True)
-    return jsonify(access_token=access_token)
+    return jsonify(access_token=access_token, user=user)
 
 @app.route("/logout", methods=["POST"])
 def logout():

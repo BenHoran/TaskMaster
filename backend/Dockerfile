@@ -9,4 +9,4 @@ WORKDIR ${PROJECT_DIR}
 RUN pip install pipenv && \
     pipenv install --system --deploy
 
-CMD ["flask", "--app", "server", "run", "-h", "0.0.0.0"]
+CMD ["flask", "run"]
