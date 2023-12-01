@@ -68,7 +68,7 @@ pipeline {
                 }
             }
         }
-        stage('Deploy Flask to K8') {
+        stage('Deploy React to K8') {
             steps {
                 script {
                     docker.withRegistry("https://${LOCAL_REPO}:5000") {
