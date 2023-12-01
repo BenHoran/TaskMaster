@@ -21,12 +21,18 @@ pipeline {
             steps {
                 script {
                         sh "docker compose -f docker-compose.yaml build"
-                        sh "docker image push ${LOCAL_REPO}:5000/taskmaster_db:latest"
-                        sh "docker image push ${LOCAL_REPO}:5000/taskmaster_db:${env.BUILD_ID}"
-                        sh "docker image push ${LOCAL_REPO}:5000/taskmaster_flask:latest"
-                        sh "docker image push ${LOCAL_REPO}:5000/taskmaster_flask:${env.BUILD_ID}"
-                        sh "docker image push ${LOCAL_REPO}:5000/taskmaster_react:latest"
-                        sh "docker image push ${LOCAL_REPO}:5000/taskmaster_react:${env.BUILD_ID}"
+
+                        sh "docker image tag ${LOCAL_REPO}:5000/taskmaster_db:latest"
+                        sh "docker image tag ${LOCAL_REPO}:5000/taskmaster_db:${env.BUILD_ID}"
+                        sh "docker image push --all-tags ${LOCAL_REPO}:5000/taskmaster_db"
+
+                        sh "docker image tag ${LOCAL_REPO}:5000/taskmaster_flask:latest"
+                        sh "docker image tag ${LOCAL_REPO}:5000/taskmaster_flask:${env.BUILD_ID}"
+                        sh "docker image push --all-tags ${LOCAL_REPO}:5000/taskmaster_flask"
+
+                        sh "docker image tag ${LOCAL_REPO}:5000/taskmaster_react:latest"
+                        sh "docker image tag ${LOCAL_REPO}:5000/taskmaster_react:${env.BUILD_ID}"
+                        sh "docker image push --all-tags ${LOCAL_REPO}:5000/taskmaster_react"
                 }
                 // dir('docker/mysql') {
                 //     script {
