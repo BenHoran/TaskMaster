@@ -38,6 +38,6 @@ spec:
     app: taskmaster-app
   ports:
     - protocol: TCP
-      port: 80
+      port: 3000
       targetPort: tmflask-port
   type: LoadBalancer  # This line exposes the service externally
