@@ -5,7 +5,7 @@ version: "3.7"
 services:
   tmflask:
     # Note that we are building from our current terminal directory where our Dockerfile is located, we use .
-    build: . 
+    build: ./frontend 
     # naming our resulting container
     container_name: taskmaster-flask
     # publishing a port so that external services requesting port 8000 on your local machine
