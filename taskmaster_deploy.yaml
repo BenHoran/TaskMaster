@@ -41,3 +41,15 @@ spec:
       port: 8080
       targetPort: tmreact-port
   type: LoadBalancer  # This line exposes the service externally
+---
+apiVersion: v1
+kind: Service
+metadata: 
+  name: tmflask
+spec:
+  type: ClusterIP
+  selector:
+    component: tmflask
+  ports:
+    - port: 5000
+      targetPort: tmflask-port
