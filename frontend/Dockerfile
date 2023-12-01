@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:18 as build=stage
 
 WORKDIR /taskmaster/
 
@@ -8,6 +8,15 @@ COPY package.json /taskmaster/
 
 RUN npm install
 
-EXPOSE 3000
+RUN npm run build
 
-CMD ["npm", "start"]
+FROM nginx:1.15
+
+RUN rm /etc/nginx/conf.d/default.conf
+
+COPY --from=build=stage /taskmaster/additional_container_server.conf /etc/nginx/conf.d/
+COPY --from=build=stage /taskmaster/build /usr/share/nginx/html
+
+EXPOSE 8080
+
+CMD ["nginx", "-g", "daemon off;"]

@@ -13,6 +13,7 @@ sqlalchemy = "*"
 mysql-connector-python = "*"
 pytest = "*"
 flask-cors = "*"
+gevent = "*"
 
 [dev-packages]
 
