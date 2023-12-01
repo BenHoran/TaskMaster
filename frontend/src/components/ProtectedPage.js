@@ -11,7 +11,7 @@ const ProtectedPage = () => {
   const handleLogout = async () => {
     try {
       await axios.post(
-        "http://flask:5000/logout",
+        "http://tmflask-service:5000/logout",
         {},
         {
           headers: {
