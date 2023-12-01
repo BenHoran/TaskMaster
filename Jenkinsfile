@@ -54,7 +54,7 @@ pipeline {
                     }
                     retry(count: 5) {
                         sh "kubectl apply -f taskmaster_db.yaml"
-                        sleep(time: 10. unit: "SECONDS")
+                        sleep(time: 10, unit: "SECONDS")
                     }
                 }
             }
@@ -69,7 +69,7 @@ pipeline {
                     }
                     retry(count: 5) {
                         sh "kubectl apply -f taskmaster_flask.yaml"
-                        sleep(time: 10. unit: "SECONDS")
+                        sleep(time: 10, unit: "SECONDS")
                     }
                 }
             }
@@ -84,7 +84,7 @@ pipeline {
                     }
                     retry(count: 5) {
                         sh "kubectl apply -f taskmaster_react.yaml"
-                        sleep(time: 10. unit: "SECONDS")
+                        sleep(time: 10, unit: "SECONDS")
                     }
                 }
             }
