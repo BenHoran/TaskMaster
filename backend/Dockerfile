@@ -9,4 +9,6 @@ WORKDIR ${PROJECT_DIR}
 RUN pip install pipenv && \
     pipenv install --system --deploy
 
+EXPOSE 5000
+
 CMD ["flask", "run"]
