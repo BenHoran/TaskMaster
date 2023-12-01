@@ -52,7 +52,10 @@ pipeline {
                         dockerImage.push("${env.BUILD_ID}")
                         dockerImage.push("latest")
                     }
-                    sh "kubectl apply -f taskmaster_db.yaml"
+                    retry(count: 5) {
+                        sh "kubectl apply -f taskmaster_db.yaml"
+                        sleep(time: 10. unit: "SECONDS")
+                    }
                 }
             }
         }
@@ -64,7 +67,10 @@ pipeline {
                         dockerImage.push("${env.BUILD_ID}")
                         dockerImage.push("latest")
                     }
-                    sh "kubectl apply -f taskmaster_flask.yaml"
+                    retry(count: 5) {
+                        sh "kubectl apply -f taskmaster_flask.yaml"
+                        sleep(time: 10. unit: "SECONDS")
+                    }
                 }
             }
         }
@@ -76,7 +82,10 @@ pipeline {
                         dockerImage.push("${env.BUILD_ID}")
                         dockerImage.push("latest")
                     }
-                    sh "kubectl apply -f taskmaster_react.yaml"
+                    retry(count: 5) {
+                        sh "kubectl apply -f taskmaster_react.yaml"
+                        sleep(time: 10. unit: "SECONDS")
+                    }
                 }
             }
         }
