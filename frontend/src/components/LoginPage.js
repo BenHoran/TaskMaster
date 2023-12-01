@@ -15,7 +15,7 @@ const LoginPage = () => {
     try {
       const basicAuthToken = btoa(`${username}:${password}`);
       const response = await axios.post(
-        "http://192.168.1.135:5000/login",
+        "http://flask:5000/login",
         {},
         {
           headers: {

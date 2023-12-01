@@ -6,6 +6,7 @@ metadata:
   labels:
     app: taskmaster_flask
 spec:
+  hostname: flask
   containers:
     - name: appcontainer
       image: 192.168.33.30:5000/taskmaster_flask:latest
