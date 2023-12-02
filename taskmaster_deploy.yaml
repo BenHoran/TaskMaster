@@ -106,9 +106,9 @@ spec:
   selector:
     web: reactclient
   ports:
-    - port: 80
+    - port: 8080
       nodePort: 30020
-      targetPort: 80
+      targetPort: 8080
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -134,4 +134,4 @@ spec:
         image: 192.168.33.30:5000/taskmaster_react:latest
         ports:
           - name: tmreact-port
-            containerPort: 80
+            containerPort: 8080
