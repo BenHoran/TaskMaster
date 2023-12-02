@@ -3,7 +3,7 @@ apiVersion: v1
 kind: Service
 metadata: 
   name: tmdb
-  namespace: reactapp
+  # namespace: reactapp
   labels:
     db: mysql
 spec:
@@ -17,7 +17,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend
-  namespace: reactapp
+  # namespace: reactapp
   labels:
     db: mysql
 spec:
@@ -28,7 +28,7 @@ spec:
   template:
     metadata:
       name: db-pods
-      namespace: reactapp
+      # namespace: reactapp
       labels:
         db: mysql
     spec:
@@ -43,7 +43,7 @@ apiVersion: v1
 kind: Service
 metadata: 
   name: flask-api-cluster
-  namespace: reactapp
+  # namespace: reactapp
   labels:
     backend: flaskapi
 spec:
@@ -57,7 +57,7 @@ apiVersion: v1
 kind: Service
 metadata: 
   name: flask-api
-  namespace: reactapp
+  # namespace: reactapp
   labels:
     backend: flaskapi
 spec:
@@ -72,7 +72,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend-api
-  namespace: reactapp
+  # namespace: reactapp
   labels:
     backend: flaskapi
 spec:
@@ -83,7 +83,7 @@ spec:
   template:
     metadata:
       name: api-pods
-      namespace: reactapp
+      # namespace: reactapp
       labels:
         backend: flaskapi
     spec:
@@ -98,7 +98,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: react-client
-  namespace: reactapp
+  # namespace: reactapp
   labels:
     web: reactclient
 spec:
@@ -113,7 +113,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: react-app
-  namespace: reactapp
+  # namespace: reactapp
   labels:
     web: reactclient
 spec:
@@ -124,7 +124,7 @@ spec:
   template:
     metadata:
       name: client-pods
-      namespace: reactapp
+      # namespace: reactapp
       labels:
         web: reactclient
     spec:
