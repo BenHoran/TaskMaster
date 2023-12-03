@@ -9,8 +9,6 @@ class DatabaseManager:
         # Replace these values with your actual database information
         self.DATABASE_URI = f'mysql+mysqlconnector://{username}:{password}@{host}:{port}/{database}'
 
-        print(self.DATABASE_URI)
-
         # Define the database model
         self.Base = declarative_base()
 
