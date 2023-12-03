@@ -67,7 +67,7 @@ def unauthorized_callback(error):
 
 @auth.error_handler
 def unauthorized():
-    return jsonify({'error': 'Failed to authenticate. Check your credentials'}), 401
+    return jsonify({'error': 'Failed to authenticate. Check your credentials'}), 403
 
 if __name__ == '__main__':
     app.run()

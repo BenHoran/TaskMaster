@@ -57,7 +57,7 @@ class FlaskAppTestCase(unittest.TestCase):
         
         response = self.app.post('/login', headers={'Authorization': 'Basic ' + credentials})
         data = json.loads(response.get_data(as_text=True))
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 403)
         data = json.loads(response.data)
         self.assertEqual(data, {'error': 'Failed to authenticate. Check your credentials'})
 
