@@ -115,6 +115,27 @@ class FlaskAppTestCase(unittest.TestCase):
         self.assertEqual(response.status_code, 401)
         self.assertEqual(json.loads(response.data), {
                          'error': 'token_invalid', 'msg': 'Token is invalid'})
+        
+    @patch('server.DatabaseManager')
+    def test_logout_revokes_token(self, mock_db_manager):
+        mock_db_manager.return_value.authenticate_user.return_value = True
+
+        credentials = base64.b64encode(b'user1:password1').decode('utf-8')
+
+        response = self.app.post(
+            '/login', headers={'Authorization': 'Basic ' + credentials})
+        access_token = json.loads(response.data).get('access_token')
+    
+        headers = {'Authorization': f'Bearer {access_token}'}
+        response = self.app.post('/logout', headers=headers)
+
+        self.assertEqual(response.status_code, 200)
+
+        headers = {'Authorization': f'Bearer {access_token}'}
+        response = self.app.get('/tasks', headers=headers)
+
+        self.assertEqual(response.status_code, 401)
+
 
 
 if __name__ == '__main__':
