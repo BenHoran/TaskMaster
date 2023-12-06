@@ -1,5 +1,5 @@
 // ProtectedPage.js
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "./store";
 import axios from "axios";
@@ -7,6 +7,35 @@ import axios from "axios";
 const ProtectedPage = () => {
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
+  const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          "/api/tasks",
+          {
+            headers: {
+              Authorization: `Bearer ${user.access_token}`,
+            }
+          },
+        );
+        setData(response.data.results);
+        setLoading(false);
+        setError("");
+      } catch {
+        setData([]);
+        setLoading(false);
+        setError("Error fetching data. Please try again.");
+        console.error("API call failed: ");
+      }
+    };
+    if (user && user.access_token) {
+      fetchData();
+    }
+  }, [user]);
 
   const handleLogout = async () => {
     try {
@@ -29,13 +58,45 @@ const ProtectedPage = () => {
   return (
     <div style={styles.container}>
       <h2 style={styles.title}>Welcome, {user.username}!</h2>
-      <p style={styles.paragraph}>This is a protected page with authenticated access.</p>
-      <button onClick={handleLogout} style={styles.button}>Logout</button>
+      <button onClick={handleLogout} style={styles.button}>
+        Logout
+      </button>
+
+      {loading ? (
+        <p>Loading...</p>
+      ) : error ? (
+        <p style={{ color: "red" }}>{error}</p>
+      ) : (
+        <div>
+          <h3>Data Table</h3>
+          <table style={{ borderCollapse: "collapse", width: "100%" }}>
+            <thead>
+              <tr>
+                <th style={styles.cell}>Task</th>
+                <th style={styles.cell}>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {data.map((item) => (
+                <tr key={item.task_id}>
+                  <td style={styles.cell}>{item.task_name}</td>
+                  <td style={styles.cell}>{item.task_date}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };
 
 const styles = {
+  cell: {
+    border: '1px solid #ddd',
+    padding: '8px',
+    textAlign: 'left',
+  },
   container: {
     width: "300px",
     margin: "auto",
@@ -60,7 +121,7 @@ const styles = {
     cursor: "pointer",
   },
   paragraph: {
-    textAlign: "center"
+    textAlign: "center",
   },
   error: {
     color: "red",
