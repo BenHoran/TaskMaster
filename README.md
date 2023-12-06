@@ -28,7 +28,7 @@ In the world of TaskMaster, we don't just deploy; we dance with Minikube. Contai
 
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/your-username/TaskMaster.git
+   git clone https://github.com/BenHoran/TaskMaster.git
    ```
 
 2. **Set Up and Play:**
