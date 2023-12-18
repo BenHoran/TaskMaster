@@ -64,7 +64,7 @@ def tasks_collection():
     return response
 
 
-@app.route('/tasks/task(<book_id>)', methods=['GET', 'PUT', 'PATCH', 'DELETE'])
+@app.route('/tasks(<task_id>)', methods=['GET', 'PUT', 'PATCH', 'DELETE'])
 @jwt_required()
 def task_item():
     if request.method == "GET":
