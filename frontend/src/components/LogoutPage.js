@@ -1,11 +1,10 @@
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "./store";
 import axios from "axios";
 import { useEffect } from "react";
 
 const LogoutPage = () => {
-  const navigate = useNavigate();
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
@@ -28,12 +27,8 @@ const LogoutPage = () => {
       }
     };
 
-    const logoutTimer = setTimeout(() => {
-      handleLogout();
-    }, 3 * 1000);
-
-    return () => clearTimeout(logoutTimer);
-  }, [dispatch, navigate, user]);
+    handleLogout();
+  }, [user, dispatch]);
 
   return <Navigate to={"/"} />;
 };

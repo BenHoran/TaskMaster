@@ -8,8 +8,8 @@ const userSlice = createSlice({
     login: (state, action) => {
       return { ...state, ...action.payload };
     },
-    logout: (state) => {
-      return null;
+    logout: () => {
+      return null
     },
   },
 });
