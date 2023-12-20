@@ -3,9 +3,12 @@ version: "3.7"
 
 # we will be creating these services
 services:
-  tmflask:
+  flask-api-cluster:
     build: ./backend
     image: taskmaster_flask
+    restart: always
+    networks:
+      - test
     # Note that we are building from our current terminal directory where our Dockerfile is located, we use .
     # naming our resulting container
     container_name: tmflask
@@ -14,18 +17,28 @@ services:
     ports:
       - "5000:5000"
 
-  tmreact: 
+  react-client: 
     # Since our Dockerfile for web-server is located in react-app foler, our build context is ./react-app
     build: ./frontend 
     image: taskmaster_react
+    restart: always
+    networks:
+      - test
     container_name: tmreact
     ports:
-      - "8080:8080"
+      - "80:8080"
 
-  tmdb: 
+  mysql-cluster: 
     # Since our Dockerfile for web-server is located in react-app foler, our build context is ./react-app
     build: ./docker/mysql
     image: taskmaster_db
+    restart: always
+    networks:
+      - test
     container_name: tmdb
     ports:
       - "3306:3306"
+
+networks:
+  test:
+    driver: bridge
