@@ -1,9 +1,9 @@
 from dotenv import load_dotenv
 import os
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, Sequence
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, Sequence, exc
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
-from flask import session
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
+import bcrypt
 
 
 Base = declarative_base()
@@ -11,10 +11,10 @@ Base = declarative_base()
 
 class UserTable(Base):
     __tablename__ = 'users'
-    user_id = Column(Integer, Sequence('user_id_seq'), primary_key=True)
-    username = Column(String(50))
-    userpass = Column(String(50))
-    email = Column(String(100))
+    user_id = Column(Integer, Sequence('user_id_seq'), primary_key=True, index=True)
+    username = Column(String(50), index=True)
+    userpass = Column(String(255))
+    email = Column(String(100), unique=True, index=True)
 
 
 class TaskTable(Base):
@@ -50,20 +50,28 @@ class DatabaseManager:
         self.Session = sessionmaker(bind=self.engine)
         self.session = self.Session()
 
-    def authenticate_user(self, username, password):
+    def authenticate_user(self, email, password):
         # Validate user and password
         user = self.session.query(UserTable).filter_by(
-            username=username, userpass=password).first()
+            email=email).first()
 
-        if user:
-            session['user_id'] = user.user_id
-            return True  # Authentication successful
+        if user and bcrypt.checkpw(password=password.encode('utf-8'), hashed_password=user.userpass.encode('utf-8')):
+            return user.user_id  # Authentication successful
         else:
             return False  # Authentication failed
+        
+    def add_user(self, username, password, email):
+        password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        user = self.session.add(UserTable(username=username, email=email, userpass=password_hash))
+        try:
+            self.session.commit()
+        except exc.SQLAlchemyError as e:
+            print(type(e))
+            self.session.rollback()
 
-    def get_tasks(self):
+
+    def get_tasks(self, user_id):
         # Get tasks from table associated to user
-        user_id = session.get('user_id')
         if user_id:
             tasks = self.session.query(
                 TaskTable).filter_by(user_id=user_id).all()
@@ -72,9 +80,8 @@ class DatabaseManager:
         else:
             return []
 
-    def add_task(self, task_name):
+    def add_task(self, task_name, user_id):
         # Insert a new task for the user
-        user_id = session.get('user_id')
         if user_id:
             new_task = TaskTable(user_id=user_id, task_name=task_name)
             self.session.add(new_task)
@@ -96,15 +103,21 @@ if __name__ == "__main__":
     host = str(os.getenv('MYSQL_HOST'))
     port = str(os.getenv('MYSQL_PORT'))
     database = str(os.getenv('MYSQL_DB'))
-    # Replace these values with your actual database information
+   
     db_manager = DatabaseManager(
         username=username, password=password, host=host, port=port, database=database)
+    
+    # Add user
 
-    if db_manager.authenticate_user('testuser', 'password'):
+    db_manager.add_user('newuser', 'password', 'newuser@domain.com')
+
+    # Verify Password
+
+    if db_manager.authenticate_user('newuser@domain.com', 'password'):
         print("Authentication successful!")
     else:
         print("Authentication failed.")
 
-    print(db_manager.get_tasks('1'))
+    # print(db_manager.get_tasks('1'))
 
     db_manager.close_session()

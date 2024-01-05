@@ -18,11 +18,14 @@ USE TaskMaster;
 
 -- Create a table called 'users'
 CREATE TABLE IF NOT EXISTS users (
-    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INTEGER NOT NULL AUTO_INCREMENT,
     username VARCHAR(50) NOT NULL,
     userpass VARCHAR(50) NOT NULL,
-    email VARCHAR(100) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    email VARCHAR(100) NOT NULL UNIQUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (user_id),
+    INDEX ix_users_username (username),
+    INDEX ix_users_email (email)
 );
 
 -- Create another table called 'tasks'
@@ -33,5 +36,3 @@ CREATE TABLE IF NOT EXISTS tasks (
     task_date DATE,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );
-
-INSERT INTO users (username, userpass, email) VALUES ('testuser', 'password', 'testuser@domain.com')

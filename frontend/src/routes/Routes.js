@@ -15,7 +15,7 @@ const Routes = () => {
   const user = useSelector((state) => state.user);
 
   const routesForPublic = [
-    { path: "/", element: <Landing /> },
+    { path: "", element: <Landing /> },
     { path: "/signup", element: <SignUp /> },
     { path: "/recover", element: <RecoverPassword /> },
   ];

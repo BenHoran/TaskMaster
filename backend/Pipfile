@@ -16,6 +16,7 @@ flask-cors = "*"
 gevent = "*"
 marshmallow-sqlalchemy = "*"
 python-jose = "*"
+bcrypt = "*"
 
 [dev-packages]
 

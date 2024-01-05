@@ -1,6 +1,6 @@
 import os
 from flask import Flask, jsonify, request, session
-from flask_jwt_extended import JWTManager, jwt_required, create_access_token, get_jwt_identity
+from flask_jwt_extended import JWTManager, jwt_required, create_refresh_token, create_access_token, get_jwt_identity
 from flask_httpauth import HTTPBasicAuth
 from datetime import timedelta
 from dotenv import load_dotenv
@@ -18,7 +18,7 @@ port = str(os.getenv('MYSQL_PORT'))
 database = str(os.getenv('MYSQL_DB'))
 app.secret_key = str(os.getenv('JWT_SECRET_KEY'))
 app.config['JWT_SECRET_KEY'] = str(os.getenv('JWT_SECRET_KEY'))
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=5)
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(minutes=1)
 app.config['JWT_BLACKLIST_ENABLED'] = True
 app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access']
 
@@ -31,7 +31,9 @@ auth = HTTPBasicAuth()
 def verify_password(login, passwd):
     db_manager = DatabaseManager(
             username=username, password=password, host=host, port=port, database=database)
-    if db_manager.authenticate_user(login, passwd):
+    user_id = db_manager.authenticate_user(login, passwd)
+    if user_id:
+        session['user_id'] = user_id
         db_manager.close_session()
         return True
     else:
@@ -43,9 +45,51 @@ def verify_password(login, passwd):
 @auth.login_required  # Requires Basic Authentication
 def login():
     user = auth.current_user()
-    access_token = create_access_token(identity=user, fresh=True)
-    return jsonify(access_token=access_token, user=user)
+    access_token = create_access_token(identity=user)
+    refresh_token = create_refresh_token(identity=user)
+    return jsonify(
+        access_token=access_token, 
+        refresh_token=refresh_token, 
+        user=user)
 
+@app.route("/logout", methods=["POST"])
+@jwt_required()
+def logout():
+    auth_header = request.headers.get('Authorization')
+
+    if auth_header:
+        # Extracting JTI from Authorization header
+        jti = decode_token(auth_header.split()[1])['jti']
+        blacklist.add(jti)
+
+        return jsonify(logout="success")
+    else:
+        return jsonify(message="No authorization header provided"), 401
+
+@app.route("/refresh", methods=["POST"])
+@jwt_required(refresh=True)
+def refresh():
+    identity = get_jwt_identity()
+    access_token = create_access_token(identity=identity)
+    return jsonify(access_token=access_token)
+
+@app.route('/signup', methods=['POST'])
+def signup():
+    db_manager = DatabaseManager(
+            username=username, password=password, host=host, port=port, database=database)
+    try:
+        data = request.get_json()
+        new_user_email = data['email']
+        new_user_username = data['username']
+        new_user_password = data['password']
+
+        db_manager.add_user(username=new_user_username, password=new_user_password, email=new_user_email)
+        db_manager.close_session()
+        return jsonify({'msg': 'User created successfully'}), 200
+    except Exception as e:
+        db_manager.close_session()
+        return jsonify({'error': str(e)}), 500
+    
 
 @app.route('/tasks', methods=['GET', 'POST'])
 @jwt_required()
@@ -53,7 +97,7 @@ def tasks_collection():
     db_manager = DatabaseManager(
             username=username, password=password, host=host, port=port, database=database)
     if request.method == "GET":
-        tasks = db_manager.get_tasks()
+        tasks = db_manager.get_tasks(session.get('user_id'))
         response = jsonify(results=tasks)
 
     if request.method == "POST":
@@ -62,7 +106,6 @@ def tasks_collection():
         response = jsonify({"msg": ""})
     db_manager.close_session()
     return response
-
 
 @app.route('/tasks(<task_id>)', methods=['GET', 'PUT', 'PATCH', 'DELETE'])
 @jwt_required()
@@ -82,20 +125,6 @@ def task_item():
     response = jsonify({"msg": ""})
     return response
 
-
-@app.route("/logout", methods=["POST"])
-@jwt_required()
-def logout():
-    auth_header = request.headers.get('Authorization')
-
-    if auth_header:
-        # Extracting JTI from Authorization header
-        jti = decode_token(auth_header.split()[1])['jti']
-        blacklist.add(jti)
-
-        return jsonify(logout="success")
-    else:
-        return jsonify(message="No authorization header provided"), 401
 
 
 @jwt.token_in_blocklist_loader
@@ -122,12 +151,12 @@ def expired_token_callback(jwt_header, jwt_payload):
 @jwt.invalid_token_loader
 def invalid_token_callback(error):
     return jsonify({'msg': 'Token is invalid',
-                    'error': 'token_invalid'}), 401
+                    'error': 'token_invalid'}), 403
 
 
 @jwt.unauthorized_loader
 def unauthorized_callback(error):
-    return jsonify({'error': 'Failed to authenticate. Check your credentials'}), 401
+    return jsonify({'error': 'Failed to authenticate. Check your credentials'}), 403
 
 
 @auth.error_handler
