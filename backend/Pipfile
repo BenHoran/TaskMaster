@@ -17,6 +17,7 @@ gevent = "*"
 marshmallow-sqlalchemy = "*"
 python-jose = "*"
 bcrypt = "*"
+icecream = "*"
 
 [dev-packages]
 

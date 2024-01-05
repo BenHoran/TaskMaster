@@ -62,12 +62,14 @@ class DatabaseManager:
         
     def add_user(self, username, password, email):
         password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-        user = self.session.add(UserTable(username=username, email=email, userpass=password_hash))
+        self.session.add(UserTable(username=username, email=email, userpass=password_hash))
         try:
             self.session.commit()
+            return True
         except exc.SQLAlchemyError as e:
             print(type(e))
             self.session.rollback()
+            return False
 
 
     def get_tasks(self, user_id):

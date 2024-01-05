@@ -7,6 +7,8 @@ from dotenv import load_dotenv
 from flask_cors import CORS
 from database_manager import DatabaseManager
 
+from icecream import ic
+
 app = Flask(__name__)
 CORS(app)
 
@@ -77,18 +79,24 @@ def refresh():
 def signup():
     db_manager = DatabaseManager(
             username=username, password=password, host=host, port=port, database=database)
-    try:
-        data = request.get_json()
-        new_user_email = data['email']
-        new_user_username = data['username']
-        new_user_password = data['password']
+    required_keys = ['email', 'username', 'password']
+    data = request.get_json()
+    if all(key in data for key in required_keys):
+        try:
+            db_manager.add_user(
+                username=data['email'], 
+                password=data['username'], 
+                email=data['password']
+            )
+            db_manager.close_session()
+            return jsonify({'msg': 'User created successfully'}), 201
+        except Exception as e:
+            db_manager.close_session()
+            return jsonify({'msg': 'Something bad happend',
+                            'error': str(e)}), 500
+    else:
+        return jsonify({'msg': "Missing a required key"}), 400
 
-        db_manager.add_user(username=new_user_username, password=new_user_password, email=new_user_email)
-        db_manager.close_session()
-        return jsonify({'msg': 'User created successfully'}), 200
-    except Exception as e:
-        db_manager.close_session()
-        return jsonify({'error': str(e)}), 500
     
 
 @app.route('/tasks', methods=['GET', 'POST'])
