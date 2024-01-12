@@ -5,6 +5,7 @@ from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 import bcrypt
 
+from icecream import ic
 
 Base = declarative_base()
 
@@ -106,7 +107,6 @@ class DatabaseManager:
                 self.session.refresh(new_task)
                 return new_task
             except exc.SQLAlchemyError as e:
-                print(e)
                 self.session.rollback()
                 return e
         else:
@@ -116,12 +116,14 @@ class DatabaseManager:
         # Insert a new task for the user
         if user_id:
             try:
+                self.session.query(TaskTable.task_id).filter_by(task_id=task_id).first() is not None
                 delete_user = self.session.query(TaskTable).filter_by(task_id=task_id).one()
                 self.session.delete(delete_user)
                 self.session.commit()
-                return task_id
+                return int(task_id)
+            except exc.NoResultFound:
+                return "Task does not exist."
             except exc.SQLAlchemyError as e:
-                print(e)
                 self.session.rollback()
                 return e
         else:

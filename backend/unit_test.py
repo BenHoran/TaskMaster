@@ -1,5 +1,5 @@
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 from flask import Flask
 from flask_httpauth import HTTPBasicAuth
 from flask_jwt_extended import JWTManager, create_access_token
@@ -10,6 +10,23 @@ import base64
 from dotenv import load_dotenv
 
 from icecream import ic
+
+
+class UserMock:
+    def __init__(self, user_id, email, username, password) -> None:
+        self.user_id = user_id
+        self.email = email
+        self.username = username
+        self.password = password
+
+
+class TaskMock:
+    def __init__(self, task_date, task_id, task_name, user_id, task_complete) -> None:
+        self.task_date = task_date
+        self.task_id = task_id
+        self.task_name = task_name
+        self.user_id = user_id
+        self.task_complete = task_complete
 
 
 class FlaskAppTestCase(unittest.TestCase):
@@ -159,7 +176,12 @@ class FlaskAppTestCase(unittest.TestCase):
 
     @patch('server.DatabaseManager')
     def test_user_signup(self, mock_db_manager):
-        mock_db_manager.return_value.add_user.return_value = True
+        mock_db_manager.return_value.add_user.return_value = UserMock(
+            user_id=1000,
+            email='test@test',
+            username='testuser',
+            password='password'
+        )
 
         headers = {'Authorization': f'Bearer {self.access_token}'}
         body = {'email': 'test@test',
@@ -178,6 +200,52 @@ class FlaskAppTestCase(unittest.TestCase):
 
         self.assertEqual(response.status_code, 400)
 
+    @patch('server.DatabaseManager')
+    def test_add_task(self, mock_db_manager):
+        mock_db_manager.return_value.add_task.return_value = TaskMock(
+            task_date="2024-01-24",
+            task_id=100,
+            task_name="Test Task",
+            user_id=100,
+            task_complete=False
+        )
+
+        headers = {'Authorization': f'Bearer {self.access_token}'}
+        body = {'taskName': 'Test Task',
+                'dateDue': '2024-01-24'}
+        response = self.app.post(
+            '/tasks', headers=headers, json=body)
+
+        self.assertEqual(response.status_code, 201)
+
+    def test_add_task_missing_values(self):
+        headers = {'Authorization': f'Bearer {self.access_token}'}
+        body = {'task_name': 'Test Task',
+                'task_date': '2024-01-24'}
+        response = self.app.post(
+            '/tasks', headers=headers, json=body)
+
+        self.assertEqual(response.status_code, 400)
+
+    @patch('server.DatabaseManager')
+    def test_delete_task(self, mock_db_manager):
+        mock_db_manager.return_value.delete_task.return_value = 100
+
+        headers = {'Authorization': f'Bearer {self.access_token}'}
+        response = self.app.delete(
+            '/tasks(100)', headers=headers)
+
+        self.assertEqual(response.status_code, 202)
+
+    @patch('server.DatabaseManager')
+    def test_delete_task_missing_values(self, mock_db_manager):
+        mock_db_manager.return_value.delete_task.return_value = "Task does not exist."
+
+        headers = {'Authorization': f'Bearer {self.access_token}'}
+        response = self.app.delete(
+            '/tasks(100)', headers=headers)
+
+        self.assertEqual(response.status_code, 400)
 
 if __name__ == '__main__':
     unittest.main()

@@ -157,8 +157,11 @@ def task_item(task_id):
                 user_id=session.get('user_id'),
                 task_id=task_id
             )
+            if (result == int(task_id)):
+                response = jsonify({'task_id': int(result), 'msg': 'task deleted'}), 202
+            else:
+                response = jsonify({'msg': result}), 400
             db_manager.close_session()
-            response = jsonify({'task_id': int(task_id), 'msg': 'Task deleted'}), 202
         except Exception as e:
             db_manager.close_session()
             response = jsonify({'msg': 'Something bad happend',
