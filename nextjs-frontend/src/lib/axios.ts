@@ -1,5 +1,5 @@
 import axios from "axios";
-import { login, logout } from "@/lib/features/auth/authSlice";
+import { login, logout } from "@/lib/features/authSlice";
 import { useRouter } from "next/router";
 
 interface CreateApiParams {

@@ -47,7 +47,7 @@ const Signup = () => {
       router.push("/login", { replace: true });
       setError("");
     } catch (error) {
-      setError("Some other error");
+      setError("Account Failed to be created.");
       console.error("Account create failed:", error.message);
     }
   };

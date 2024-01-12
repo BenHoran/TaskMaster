@@ -20,7 +20,7 @@ USE TaskMaster;
 CREATE TABLE IF NOT EXISTS users (
     user_id INTEGER NOT NULL AUTO_INCREMENT,
     username VARCHAR(50) NOT NULL,
-    userpass VARCHAR(50) NOT NULL,
+    userpass VARCHAR(255) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     PRIMARY KEY (user_id),
@@ -34,5 +34,6 @@ CREATE TABLE IF NOT EXISTS tasks (
     user_id INT,
     task_name VARCHAR(100) NOT NULL,
     task_date DATE,
+    task_complete BOOLEAN,
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 );

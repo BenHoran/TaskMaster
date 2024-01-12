@@ -8,10 +8,10 @@ const Page = () => {
   return (
     <CredentialsCard>
       <CredentialsHeader
-        heading="Login to your account"
-        paragraph="Don't have an account yet?"
-        linkName="Signup"
-        linkUrl="/signup"
+        heading="Signup to create an account"
+        paragraph="Already have an account? "
+        linkName="Login"
+        linkUrl="/login"
       />
       <Signup />
     </CredentialsCard>

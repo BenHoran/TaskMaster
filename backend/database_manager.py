@@ -1,6 +1,6 @@
 from dotenv import load_dotenv
 import os
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, Sequence, exc
+from sqlalchemy import create_engine, Column, Integer, String, Boolean, Sequence, exc
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 import bcrypt
@@ -11,7 +11,8 @@ Base = declarative_base()
 
 class UserTable(Base):
     __tablename__ = 'users'
-    user_id = Column(Integer, Sequence('user_id_seq'), primary_key=True, index=True)
+    user_id = Column(Integer, Sequence('user_id_seq'),
+                     primary_key=True, index=True)
     username = Column(String(50), index=True)
     userpass = Column(String(255))
     email = Column(String(100), unique=True, index=True)
@@ -23,6 +24,7 @@ class TaskTable(Base):
     user_id = Column(String(50))
     task_name = Column(String(50))
     task_date = Column(String(100))
+    task_complete = Column(Boolean)
 
 
 class UserTableSchema(SQLAlchemyAutoSchema):
@@ -59,18 +61,25 @@ class DatabaseManager:
             return user.user_id  # Authentication successful
         else:
             return False  # Authentication failed
-        
-    def add_user(self, username, password, email):
-        password_hash = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
-        self.session.add(UserTable(username=username, email=email, userpass=password_hash))
-        try:
-            self.session.commit()
-            return True
-        except exc.SQLAlchemyError as e:
-            print(type(e))
-            self.session.rollback()
-            return False
 
+    def add_user(self, username, password, email):
+        password_hash = bcrypt.hashpw(
+            password.encode('utf-8'), bcrypt.gensalt())
+        
+        new_user = UserTable(
+            username=username,
+            email=email, 
+            userpass=password_hash
+        )
+        try:
+            self.session.add(new_user)
+            self.session.commit()
+            self.session.refresh(new_user)
+            return new_user
+        except exc.SQLAlchemyError as e:
+            print(e)
+            self.session.rollback()
+            return e
 
     def get_tasks(self, user_id):
         # Get tasks from table associated to user
@@ -82,15 +91,41 @@ class DatabaseManager:
         else:
             return []
 
-    def add_task(self, task_name, user_id):
+    def add_task(self, task_name, user_id, date_due, task_complete):
         # Insert a new task for the user
         if user_id:
-            new_task = TaskTable(user_id=user_id, task_name=task_name)
-            self.session.add(new_task)
-            self.session.commit()
-            return new_task.task_id
+            new_task = TaskTable(
+                user_id=user_id, 
+                task_name=task_name, 
+                task_date=date_due,
+                task_complete=task_complete
+            )
+            try:
+                self.session.add(new_task)
+                self.session.commit()
+                self.session.refresh(new_task)
+                return new_task
+            except exc.SQLAlchemyError as e:
+                print(e)
+                self.session.rollback()
+                return e
         else:
-            return None
+            return "Missing user_id."
+
+    def delete_task(self, task_id, user_id):
+        # Insert a new task for the user
+        if user_id:
+            try:
+                delete_user = self.session.query(TaskTable).filter_by(task_id=task_id).one()
+                self.session.delete(delete_user)
+                self.session.commit()
+                return task_id
+            except exc.SQLAlchemyError as e:
+                print(e)
+                self.session.rollback()
+                return e
+        else:
+            return "Missing user_id."
 
     def close_session(self):
         # Close the session
@@ -105,10 +140,10 @@ if __name__ == "__main__":
     host = str(os.getenv('MYSQL_HOST'))
     port = str(os.getenv('MYSQL_PORT'))
     database = str(os.getenv('MYSQL_DB'))
-   
+
     db_manager = DatabaseManager(
         username=username, password=password, host=host, port=port, database=database)
-    
+
     # Add user
 
     db_manager.add_user('newuser', 'password', 'newuser@domain.com')

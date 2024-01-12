@@ -1,6 +1,6 @@
 "use client";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { logout } from "@/lib/features/auth/authSlice";
+import { logout } from "@/lib/features/authSlice";
 
 import axios from "axios";
 import { useRouter } from "next/navigation";

@@ -83,13 +83,13 @@ def signup():
     data = request.get_json()
     if all(key in data for key in required_keys):
         try:
-            db_manager.add_user(
-                username=data['email'], 
-                password=data['username'], 
-                email=data['password']
+            result = db_manager.add_user(
+                username=data['username'], 
+                password=data['password'], 
+                email=data['email']
             )
             db_manager.close_session()
-            return jsonify({'msg': 'User created successfully'}), 201
+            return jsonify({'user_id': result.user_id, 'msg': 'User created successfully'}), 201
         except Exception as e:
             db_manager.close_session()
             return jsonify({'msg': 'Something bad happend',
@@ -109,30 +109,62 @@ def tasks_collection():
         response = jsonify(results=tasks)
 
     if request.method == "POST":
-        # Add a new task
-        pass
-        response = jsonify({"msg": ""})
-    db_manager.close_session()
+        db_manager = DatabaseManager(
+                username=username, password=password, host=host, port=port, database=database)
+        required_keys = ['taskName', 'dateDue']
+        data = request.get_json()
+        if all(key in data for key in required_keys):
+            try:
+                result = db_manager.add_task(
+                    user_id=session.get('user_id'),
+                    date_due=data['dateDue'], 
+                    task_name=data['taskName'],
+                    task_complete=False
+                )
+                db_manager.close_session()
+                task = {
+                    'user_id': session.get('user_id'),
+                    'task_date': data['dateDue'], 
+                    'task_name': data['taskName'],
+                    'task_complete': False,
+                    'task_id': result.task_id
+                }
+                response = jsonify({'task': task}), 201
+            except Exception as e:
+                db_manager.close_session()
+                response = jsonify({'msg': 'Something bad happend',
+                                'error': str(e)}), 500
+        else:
+            response = jsonify({'msg': "Missing a required key"}), 400
+        db_manager.close_session()
+
     return response
 
 @app.route('/tasks(<task_id>)', methods=['GET', 'PUT', 'PATCH', 'DELETE'])
 @jwt_required()
-def task_item():
+def task_item(task_id):
     if request.method == "GET":
-        # Get task
-        pass
+        response = jsonify({'msg': 'Not Implemented.'}), 501
     if request.method == "PUT":
-        # Update task
-        pass
+        response = jsonify({'msg': 'Not Implemented.'}), 501
     if request.method == "PATCH":
-        # Update task fields
-        pass
+        response = jsonify({'msg': 'Not Implemented.'}), 501
     if request.method == "DELETE":
-        # Delete task
-        pass
-    response = jsonify({"msg": ""})
+        db_manager = DatabaseManager(
+                username=username, password=password, host=host, port=port, database=database)
+        try:
+            result = db_manager.delete_task(
+                user_id=session.get('user_id'),
+                task_id=task_id
+            )
+            db_manager.close_session()
+            response = jsonify({'task_id': int(task_id), 'msg': 'Task deleted'}), 202
+        except Exception as e:
+            db_manager.close_session()
+            response = jsonify({'msg': 'Something bad happend',
+                            'error': str(e)}), 500
+        db_manager.close_session()
     return response
-
 
 
 @jwt.token_in_blocklist_loader

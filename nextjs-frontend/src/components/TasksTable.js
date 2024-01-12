@@ -3,34 +3,50 @@ import React, { useState, useEffect, Fragment } from "react";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { useRouter } from "next/navigation";
 import createApi from "@/lib/axios";
+import Modal from "./Modal/Modal";
+import AddTask from "./AddTask";
+import { getTasks } from "@/lib/features/taskActions";
+
+import { MdEdit, MdDelete, MdCheckCircle } from "react-icons/md";
+import DeleteTask from "./DeleteTask";
 
 const TaskTable = () => {
   const user = useAppSelector((state) => state.user);
+  const tasks = useAppSelector((state) => state.tasks);
+
+  const [modalData, setModalData] = useState();
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
+
   const router = useRouter();
   const dispatch = useAppDispatch();
-  const api = createApi({dispatch, user, router});
+  const api = createApi({ dispatch, user, router });
+
+  const [isAddOpen, setAddIsOpen] = useState(false);
+  const [isDeleteOpen, setDeleteIsOpen] = useState(false);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await api.get("/api/tasks");
-        setData(response.data.results);
-        setLoading(false);
-        setErrorMessage("");
-      } catch (err) {
-        setData([]);
-        setLoading(false);
-        setErrorMessage("Error fetching data. Please try again.");
-        console.error("API call failed: [ " + err + "]");
-        // router.push("/logout", { replace: true });
-      }
-    };
+    dispatch(getTasks(user, router));
+    setLoading(false);
+  }, [dispatch]);
 
-    fetchData();
-  }, []);
+  useEffect(() => {
+    setData(tasks.tasks);
+  }, [tasks]);
+
+  const editTask = (task_id) => {
+    alert("Edit task: " + task_id);
+  };
+
+  const completeTask = (task_id) => {
+    alert("Complete task: " + task_id);
+  };
+
+  const deleteTask = (props) => {
+    setDeleteIsOpen(true);
+    setModalData(props)
+  };
 
   return (
     <div className={styles.container}>
@@ -47,6 +63,7 @@ const TaskTable = () => {
                 <tr>
                   <th className={styles.table_header}>Task</th>
                   <th className={styles.table_header}>Date</th>
+                  <th className={styles.table_header}>Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -54,10 +71,53 @@ const TaskTable = () => {
                   <tr key={item.task_id}>
                     <td className={styles.row}>{item.task_name}</td>
                     <td className={styles.row}>{item.task_date}</td>
+                    <td className="p-2 border-b text-center">
+                      <span className="inline-flex items-baseline space-x-2">
+                        <MdCheckCircle
+                          title="Complete"
+                          onClick={() => completeTask(item.task_id)}
+                        />
+                        <MdEdit
+                          title="Edit"
+                          onClick={() => editTask(item.task_id)}
+                        />
+                        <MdDelete
+                          title="Delete"
+                          onClick={() => deleteTask(item)}
+                        />
+                      </span>
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
+            <button
+              onClick={() => setAddIsOpen(true)}
+              className={styles.button}
+            >
+              New Task
+            </button>
+            <Modal
+              handleClose={() => setAddIsOpen(false)}
+              isOpen={isAddOpen}
+              modalTitle="Add Task"
+            >
+              <AddTask
+                handleClose={() => setAddIsOpen(false)}
+                isOpen={isAddOpen}
+              />
+            </Modal>
+            <Modal
+              handleClose={() => setDeleteIsOpen(false)}
+              isOpen={isDeleteOpen}
+              modalTitle="Confirm Delete Task"
+            >
+              <DeleteTask
+                handleClose={() => setDeleteIsOpen(false)}
+                task={modalData}
+                isOpen={isDeleteOpen}
+              />
+            </Modal>
           </Fragment>
         )}
       </div>
@@ -73,6 +133,8 @@ const styles = {
   table: "table-auto border",
   table_header: "font-bold p-2 border-b",
   row: "p-2 border-b",
+  button:
+    "m-4 text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800",
 };
 
 export default TaskTable;

@@ -1,6 +1,6 @@
 "use client";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
-import { login } from "@/lib/features/auth/authSlice";
+import { login } from "@/lib/features/authSlice";
 import { useState, Fragment } from "react";
 
 import axios from "axios";
