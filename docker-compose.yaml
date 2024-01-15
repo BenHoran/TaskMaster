@@ -1,7 +1,6 @@
 # indicating which version of Docker-compose we wish to use
 version: "3.7"
 
-# we will be creating these services
 services:
   flask-api-cluster:
     build: ./backend
@@ -9,11 +8,7 @@ services:
     restart: always
     networks:
       - test
-    # Note that we are building from our current terminal directory where our Dockerfile is located, we use .
-    # naming our resulting container
     container_name: tmflask
-    # publishing a port so that external services requesting port 8000 on your local machine
-    # are mapped to port 8000 on our container
     ports:
       - "5000:5000"
 
@@ -25,7 +20,17 @@ services:
       - test
     container_name: tmreact
     ports:
-      - "80:8080"
+      - "3000:3000"
+
+  web-server: 
+    build: ./docker/nginx
+    image: taskmaster_web
+    restart: always
+    networks:
+      - test
+    container_name: tmweb
+    ports:
+      - "80:8888"
 
   mysql-cluster: 
     build: ./docker/mysql
