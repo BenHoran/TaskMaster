@@ -18,8 +18,7 @@ services:
       - "5000:5000"
 
   react-client: 
-    # Since our Dockerfile for web-server is located in react-app foler, our build context is ./react-app
-    build: ./frontend 
+    build: ./nextjs-frontend 
     image: taskmaster_react
     restart: always
     networks:
@@ -29,7 +28,6 @@ services:
       - "80:8080"
 
   mysql-cluster: 
-    # Since our Dockerfile for web-server is located in react-app foler, our build context is ./react-app
     build: ./docker/mysql
     image: taskmaster_db
     restart: always
