@@ -191,6 +191,7 @@ class FlaskAppTestCase(unittest.TestCase):
 
         self.assertEqual(response.status_code, 201)
 
+    @patch('server.DatabaseManager')
     def test_user_signup_missing_values(self):
         headers = {'Authorization': f'Bearer {self.access_token}'}
         body = {'email': 'test@test',
@@ -218,6 +219,7 @@ class FlaskAppTestCase(unittest.TestCase):
 
         self.assertEqual(response.status_code, 201)
 
+    @patch('server.DatabaseManager')
     def test_add_task_missing_values(self):
         headers = {'Authorization': f'Bearer {self.access_token}'}
         body = {'task_name': 'Test Task',
