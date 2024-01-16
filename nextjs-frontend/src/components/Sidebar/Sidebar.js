@@ -1,38 +1,48 @@
-import React, { Fragment } from "react";
-import Link from 'next/link'
+"use client";
+import React, { Fragment, useState } from "react";
+import Link from "next/link";
+import { MdMenu } from "react-icons/md";
 
 const Sidebar = ({ children }) => {
+  const [showMenu, setShowMenu] = useState(false);
+
+  const buttonHandler = () => {
+    setShowMenu(!showMenu);
+  };
   return (
     <Fragment>
-      <div></div>
-      <aside className={styles.sidebar}>
-        <div className={styles.menu}>
-          <ul className={styles.menulist}>
-            <li>
-              <Link className={styles.menulink} href="/app">
-                <span className={styles.menuname}>Main</span>
-              </Link>
-            </li>
-            <li>
-              <Link className={styles.menulink} href="/app/tasks">
-                <span className={styles.menuname}>Tasks</span>
-              </Link>
-            </li>
-          </ul>
-        </div>
-      </aside>
+      <div className="bg-gray-800 text-gray-100 flex md:hidden justify-end">
+        <button
+          onClick={buttonHandler}
+          className="p-4 focus:outline-none focus:bg-gray-700"
+        >
+          <MdMenu className="h-5 w-5" />
+        </button>
+      </div>
+      <div
+        className={styles.sidebar + (showMenu ? " -translate-x-full" : "")}
+      >
+        <nav>
+          <Link className={styles.menulink} href="/app">
+            Main
+          </Link>
+          <Link className={styles.menulink} href="/app/tasks">
+            Tasks
+          </Link>
+          <Link className={styles.menulink} href="/logout">
+            Logout
+          </Link>
+        </nav>
+      </div>
     </Fragment>
   );
 };
 
 const styles = {
   sidebar:
-    "z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0",
-  menu: "h-full px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800",
-  menulist: "space-y-2 font-medium",
+    "text-gray-900 bg-gray-50 w-64 space-y-6 py-7 px-2 absolute inset-y-0 left-0 transform md:relative md:translate-x-0 transition duration-200 ease-in-out",
   menulink:
-    "flex items-center p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700 group",
-  menuname: "flex-1 ms-3 whitespace-nowrap",
+    "block py-2.5 px-4 hover:bg-green-500 rounded transition duration-200 hover:text-white",
 };
 
 export default Sidebar;

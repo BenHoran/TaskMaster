@@ -8,10 +8,10 @@ const Layout = ({ children }) => {
   return (
     <Fragment>
       <Header />
-      <main className="flex" >
+      <div className="relative min-h-screen md:flex" >
         <Sidebar />
         {children}
-      </main>
+      </div>
       <Footer />
     </Fragment>
   );

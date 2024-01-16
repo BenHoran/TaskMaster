@@ -2,7 +2,7 @@
 import React, { useState, useEffect, Fragment } from "react";
 import Link from "next/link";
 import { useAppSelector } from "@/lib/hooks";
-import { GrTask} from "react-icons/gr";
+import { GrTask } from "react-icons/gr";
 
 const Header = (props) => {
   const user = useAppSelector((state) => state.user);
@@ -19,20 +19,9 @@ const Header = (props) => {
           <GrTask className="text-white h-8 w-8" />
           <span className={style.title}>Task Master</span>
         </div>
-        {!user ? (
-          <div className={style.containerRight}>
-            <Link className={style.link} href="/signup">
-              Signup
-            </Link>
-          </div>
-        ) : (
-          <div className={style.containerRight}>
-            <span className={style.username}>{username}</span>
-            <Link className={style.link} href="/logout">
-              Logout
-            </Link>
-          </div>
-        )}
+        <div className={style.containerRight}>
+          <span className={style.username}>{username}</span>
+        </div>
       </header>
     </Fragment>
   );

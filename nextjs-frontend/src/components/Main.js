@@ -20,6 +20,6 @@ const Main = () => {
 export default Main;
 
 const styles = {
-  container: "w-100 m-auto p-7 rounded-lg mt-12 border-solid shadow-md",
-  title: "text-center text-2xl mb-5",
+  container: "flex-1 p-10 text-2xl font-bold",
+  title: "text-center mb-5",
 };
