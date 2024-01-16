@@ -2,10 +2,9 @@ from dotenv import load_dotenv
 import os
 from sqlalchemy import create_engine, Column, Integer, String, Boolean, Sequence, exc
 from sqlalchemy.orm import declarative_base, sessionmaker, relationship
+from sqlalchemy.inspection import inspect
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 import bcrypt
-
-from icecream import ic
 
 Base = declarative_base()
 
@@ -112,6 +111,28 @@ class DatabaseManager:
         else:
             return "Missing user_id."
 
+    def update_task(self, user_id, task_id, task):
+        # Insert a new task for the user
+        if user_id:
+            table_inspect = inspect(TaskTable)
+            if task[0] in table_inspect.c:
+                try:
+                    existing_task = self.session.query(TaskTable).filter_by(task_id=task_id, user_id=user_id).first()
+                    if existing_task:
+                        setattr(existing_task, task[0], task[1])
+                        self.session.commit()
+                        
+                        return existing_task
+                    else:
+                        return "Task {} not found for user {}".format(task_id, user_id)
+                except exc.SQLAlchemyError as e:
+                    self.session.rollback()
+                    return e
+            else:
+                return "{} does not exist.".format(task[0])
+        else:
+            return "Missing user_id."
+
     def delete_task(self, task_id, user_id):
         # Insert a new task for the user
         if user_id:
@@ -146,16 +167,16 @@ if __name__ == "__main__":
     db_manager = DatabaseManager(
         username=username, password=password, host=host, port=port, database=database)
 
-    # Add user
+    # # Add user
 
-    db_manager.add_user('newuser', 'password', 'newuser@domain.com')
+    # db_manager.add_user('newuser', 'password', 'newuser@domain.com')
 
-    # Verify Password
+    # # Verify Password
 
-    if db_manager.authenticate_user('newuser@domain.com', 'password'):
-        print("Authentication successful!")
-    else:
-        print("Authentication failed.")
+    # if db_manager.authenticate_user('newuser@domain.com', 'password'):
+    #     print("Authentication successful!")
+    # else:
+    #     print("Authentication failed.")
 
     # print(db_manager.get_tasks('1'))
 
