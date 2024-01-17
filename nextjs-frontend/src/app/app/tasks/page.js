@@ -1,4 +1,4 @@
-import TaskTable from "@/components/TasksTable";
+import TaskTable from "@/components/Tasks/TasksTable";
 import Suspense from 'react';
 
 const Page = () => {

@@ -6,9 +6,9 @@ import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 
 import { addTask } from "@/lib/features/taskActions";
 
-import { taskFields } from "../constants/formfields";
-import FormAction from "./FormAction";
-import Input from "./Input";
+import { taskFields } from "../../constants/formfields";
+import FormAction from "../FormAction";
+import Input from "../Input";
 
 const fields = taskFields;
 let fieldsState = {};

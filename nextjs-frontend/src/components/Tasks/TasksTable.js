@@ -3,9 +3,9 @@ import React, { useState, useEffect, Fragment } from "react";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { useRouter } from "next/navigation";
 import createApi from "@/lib/axios";
-import Modal from "./Modal/Modal";
+import Modal from "../Modal/Modal";
 import AddTask from "./AddTask";
-import { getTasks } from "@/lib/features/taskActions";
+import { getTasks, completeTask } from "@/lib/features/taskActions";
 
 import { MdEdit, MdDelete, MdCheckCircle } from "react-icons/md";
 import DeleteTask from "./DeleteTask";
@@ -35,12 +35,13 @@ const TaskTable = () => {
     setData(tasks.tasks);
   }, [tasks]);
 
-  const editTask = (task_id) => {
+  const editTaskHandler = (task_id) => {
     alert("Edit task: " + task_id);
   };
 
-  const completeTask = (task_id) => {
-    alert("Complete task: " + task_id);
+  const completeTaskHandler = (props) => {
+    console.log(props)
+    dispatch(completeTask(props, user, router))
   };
 
   const deleteTask = (props) => {
@@ -68,18 +69,18 @@ const TaskTable = () => {
               </thead>
               <tbody>
                 {data.map((item) => (
-                  <tr key={item.task_id}>
+                  <tr key={item.task_id} className={item.task_complete ? "line-through" : ""}>
                     <td className={styles.row}>{item.task_name}</td>
                     <td className={styles.row}>{item.task_date}</td>
                     <td className="p-2 border-b text-center">
                       <span className="inline-flex items-baseline space-x-2">
                         <MdCheckCircle
                           title="Complete"
-                          onClick={() => completeTask(item.task_id)}
+                          onClick={() => completeTaskHandler(item)}
                         />
                         <MdEdit
                           title="Edit"
-                          onClick={() => editTask(item.task_id)}
+                          onClick={() => editTaskHandler(item.task_id)}
                         />
                         <MdDelete
                           title="Delete"

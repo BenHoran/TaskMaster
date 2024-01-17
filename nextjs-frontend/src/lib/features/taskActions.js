@@ -69,3 +69,31 @@ export const deleteTask = (taskId, user, router) => {
     }
   };
 };
+
+export const completeTask = (taskData, user, router) => {
+  return async (dispatch) => {
+    const api = createApi({ dispatch, user, router });
+
+    console.log(taskData)
+
+    const patchData = async () => {
+      const patchTask = [{
+        operation: 'replace',
+        path: 'task_complete',
+        value: !taskData.task_complete,
+      }];
+      const response = await api.patch("/api/tasks("+ taskData.task_id +")", patchTask);
+      if (!response.status === 202) {
+        throw Error("Failed to delete task.");
+      }
+      return response.data;
+    };
+
+    try {
+      const taskResult = await patchData();
+      dispatch(taskActions.completeTask(taskResult));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+};

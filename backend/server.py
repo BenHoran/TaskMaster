@@ -153,11 +153,12 @@ def task_item(task_id):
         operations = request.get_json()
         for operation in operations:
             if operation['operation'] == 'replace':
-                db_manager.update_task(
+                result = db_manager.update_task(
                     user_id=session.get('user_id'),
+                    task_id=task_id,
                     task=(operation['path'], operation['value'])
                 )
-                response = jsonify({'msg': 'replace operation'}), 200
+                response = jsonify({'task': result}), 200
             else:
                 response = jsonify(
                     {'msg': '[{}] not implemented.'.format(operation['operation'])}), 501

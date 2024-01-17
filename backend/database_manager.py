@@ -121,8 +121,10 @@ class DatabaseManager:
                     if existing_task:
                         setattr(existing_task, task[0], task[1])
                         self.session.commit()
-                        
-                        return existing_task
+                        tasks_schema = TaskTableSchema()
+                        return tasks_schema.dump(existing_task)
+                    
+                    
                     else:
                         return "Task {} not found for user {}".format(task_id, user_id)
                 except exc.SQLAlchemyError as e:
