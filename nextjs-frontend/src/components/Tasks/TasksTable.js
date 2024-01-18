@@ -75,14 +75,17 @@ const TaskTable = () => {
                     <td className="p-2 border-b text-center">
                       <span className="inline-flex items-baseline space-x-2">
                         <MdCheckCircle
+                          id="Complete"
                           title="Complete"
                           onClick={() => completeTaskHandler(item)}
                         />
                         <MdEdit
+                          id="Edit"
                           title="Edit"
                           onClick={() => editTaskHandler(item.task_id)}
                         />
                         <MdDelete
+                          id="Delete"
                           title="Delete"
                           onClick={() => deleteTask(item)}
                         />
