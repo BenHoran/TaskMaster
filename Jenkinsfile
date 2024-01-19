@@ -66,16 +66,24 @@ pipeline {
                 // }
             }
         }
-        stage('Deploy Mysql to K8') {
-            steps {
-                script {
-                    retry(count: 5) {
-                        sh "kubectl apply -f taskmaster_deploy.yaml"
-                        sleep(time: 10, unit: "SECONDS")
-                    }
-                }
-            }
-        }
+        // stage ('Start Docker') {
+        //     steps {
+        //         script {
+        //                 sh "docker compose -f docker-compose.yaml up -d"
+        //         }
+        //     }
+        // }
+
+        // stage('Deploy Mysql to K8') {
+        //     steps {
+        //         script {
+        //             retry(count: 5) {
+        //                 sh "kubectl apply -f taskmaster_deploy.yaml"
+        //                 sleep(time: 10, unit: "SECONDS")
+        //             }
+        //         }
+        //     }
+        // }
     }
 
     post {
