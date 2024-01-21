@@ -36,7 +36,7 @@ pipeline {
 
                         sh "docker image tag taskmaster_react ${DOCKER_REPO}/${env.NAMESPACE}/taskmaster_react:latest"
                         // sh "docker image tag taskmaster_react ${DOCKER_REPO}:5000/taskmaster_react:${env.BUILD_ID}"
-                        sh "docker image push --all-tags ${DOCKER_REPO}/${env.NAMESPACE}/{env.GITHUB_OWNER}/taskmaster_react"
+                        sh "docker image push --all-tags ${DOCKER_REPO}/${env.NAMESPACE}/taskmaster_react"
 
                         sh "docker image tag taskmaster_web ${DOCKER_REPO}/${env.NAMESPACE}/taskmaster_web:latest"
                         // sh "docker image tag taskmaster_react ${DOCKER_REPO}:5000/taskmaster_react:${env.BUILD_ID}"
