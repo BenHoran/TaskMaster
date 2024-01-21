@@ -3,7 +3,9 @@ pipeline {
 
     environment {
         MINIKUBE_IP = '192.168.59.101'
-        LOCAL_REPO = '192.168.33.30'
+        // DOCKER_REPO = '192.168.33.30:5000'
+        DOCKER_REPO = 'ghcr.io'
+        DOCKER_GITHUB = credentials('DOCKER_GITHUB')
     }
 
     stages {
@@ -21,23 +23,28 @@ pipeline {
             steps {
                 script {
                         sh "docker compose -f docker-compose.yaml build"
+                        sh "docker login ghcr.io -u ${env.GITHUB_USER} -p ${env.DOCKER_GITHUB}"
 
-                        sh "docker image tag taskmaster_db ${LOCAL_REPO}:5000/taskmaster_db:latest"
-                        sh "docker image tag taskmaster_db ${LOCAL_REPO}:5000/taskmaster_db:${env.BUILD_ID}"
-                        sh "docker image push --all-tags ${LOCAL_REPO}:5000/taskmaster_db"
+                        sh "docker image tag taskmaster_db ${DOCKER_REPO}/${env.GITHUB_USER}/taskmaster_db:latest"
+                        // sh "docker image tag taskmaster_db ${DOCKER_REPO}:5000/taskmaster_db:${env.BUILD_ID}"
+                        sh "docker image push --all-tags ${DOCKER_REPO}/${env.GITHUB_USER}/taskmaster_db"
 
-                        sh "docker image tag taskmaster_flask ${LOCAL_REPO}:5000/taskmaster_flask:latest"
-                        sh "docker image tag taskmaster_flask ${LOCAL_REPO}:5000/taskmaster_flask:${env.BUILD_ID}"
-                        sh "docker image push --all-tags ${LOCAL_REPO}:5000/taskmaster_flask"
+                        sh "docker image tag taskmaster_flask ${DOCKER_REPO}/${env.GITHUB_USER}/taskmaster_flask:latest"
+                        // sh "docker image tag taskmaster_flask ${DOCKER_REPO}:5000/taskmaster_flask:${env.BUILD_ID}"
+                        sh "docker image push --all-tags ${DOCKER_REPO}/${env.GITHUB_USER}/taskmaster_flask"
 
-                        sh "docker image tag taskmaster_react ${LOCAL_REPO}:5000/taskmaster_react:latest"
-                        sh "docker image tag taskmaster_react ${LOCAL_REPO}:5000/taskmaster_react:${env.BUILD_ID}"
-                        sh "docker image push --all-tags ${LOCAL_REPO}:5000/taskmaster_react"
+                        sh "docker image tag taskmaster_react ${DOCKER_REPO}/${env.GITHUB_USER}/taskmaster_react:latest"
+                        // sh "docker image tag taskmaster_react ${DOCKER_REPO}:5000/taskmaster_react:${env.BUILD_ID}"
+                        sh "docker image push --all-tags ${DOCKER_REPO}/${env.GITHUB_USER}/{env.GITHUB_OWNER}/taskmaster_react"
+
+                        sh "docker image tag taskmaster_web ${DOCKER_REPO}/${env.GITHUB_USER}/taskmaster_web:latest"
+                        // sh "docker image tag taskmaster_react ${DOCKER_REPO}:5000/taskmaster_react:${env.BUILD_ID}"
+                        sh "docker image push --all-tags ${DOCKER_REPO}/${env.GITHUB_USER}/taskmaster_web"
                 }
                 // dir('docker/mysql') {
                 //     script {
                 //         dockerImage = docker.build( "taskmaster_db:${env.BUILD_ID}", ".")
-                //         docker.withRegistry("https://${LOCAL_REPO}:5000") {
+                //         docker.withRegistry("https://${DOCKER_REPO}:5000") {
                 //             container = "taskmaster_db"
                 //             dockerImage.push("${env.BUILD_ID}")
                 //             dockerImage.push("latest")
@@ -47,7 +54,7 @@ pipeline {
                 // dir('backend') {
                 //     script {
                 //         dockerImage = docker.build( "taskmaster_flask:${env.BUILD_ID}", ".")
-                //         docker.withRegistry("https://${LOCAL_REPO}:5000") {
+                //         docker.withRegistry("https://${DOCKER_REPO}:5000") {
                 //             container = "taskmaster_flask"
                 //             dockerImage.push("${env.BUILD_ID}")
                 //             dockerImage.push("latest")
@@ -57,7 +64,7 @@ pipeline {
                 // dir('frontend') {
                 //     script {
                 //         dockerImage = docker.build( "taskmaster_react:${env.BUILD_ID}", ".")
-                //         docker.withRegistry("https://${LOCAL_REPO}:5000") {
+                //         docker.withRegistry("https://${DOCKER_REPO}:5000") {
                 //             container = "taskmaster_react"
                 //             dockerImage.push("${env.BUILD_ID}")
                 //             dockerImage.push("latest")
