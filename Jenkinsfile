@@ -5,7 +5,7 @@ pipeline {
         MINIKUBE_IP = '192.168.59.101'
         // DOCKER_REPO = '192.168.33.30:5000'
         DOCKER_REPO = 'ghcr.io'
-        DOCKER_GITHUB = credentials('DOCKER_GITHUB')
+        DOCKER_GITHUB = credentials('GITHUB_DOCKER')
     }
 
     stages {
@@ -23,7 +23,7 @@ pipeline {
             steps {
                 script {
                         sh "docker compose -f docker-compose.yaml build"
-                        sh "docker login ghcr.io -u ${env.GITHUB_USER} -p ${env.DOCKER_GITHUB}"
+                        sh "docker login ${DOCKER_REPO} -u ${env.GITHUB_USER} -p ${env.DOCKER_GITHUB}"
 
                         sh "docker image tag taskmaster_db ${DOCKER_REPO}/${env.GITHUB_USER}/taskmaster_db:latest"
                         // sh "docker image tag taskmaster_db ${DOCKER_REPO}:5000/taskmaster_db:${env.BUILD_ID}"
