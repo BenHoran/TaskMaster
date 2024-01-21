@@ -6,7 +6,7 @@ pipeline {
         // DOCKER_REPO = '192.168.33.30:5000'
         DOCKER_REPO = 'ghcr.io'
         DOCKER_GITHUB = credentials('GITHUB_DOCKER')
-        NAMESPACE = 'tm'
+        NAMESPACE = 'benhoran'
     }
 
     stages {
@@ -24,7 +24,7 @@ pipeline {
             steps {
                 script {
                         sh "docker compose -f docker-compose.yaml build"
-                        sh "echo ${env.DOCKER_GITHUB} | docker login ${DOCKER_REPO} -u ${env.GITHUB_USER} --password-stdin"
+                        sh "echo $env.DOCKER_GITHUB | docker login ${DOCKER_REPO} -u ${env.GITHUB_USER} --password-stdin"
 
                         sh "docker image tag taskmaster_db ${DOCKER_REPO}/${env.NAMESPACE}/taskmaster_db:latest"
                         // sh "docker image tag taskmaster_db ${DOCKER_REPO}:5000/taskmaster_db:${env.BUILD_ID}"
