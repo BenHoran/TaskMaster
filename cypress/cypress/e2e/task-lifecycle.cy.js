@@ -1,5 +1,36 @@
 describe("TaskMaster Task Life Cycle Test", () => {
   it("passes", () => {
+    cy.intercept("POST", "/api/login", {
+      statusCode: 200,
+      fixture: "login.json",
+    }).as("APIlogin");
+
+    cy.intercept("GET", "/api/tasks", {
+      statusCode: 200,
+      fixture: "tasks-list.json",
+    }).as("APItasks");
+
+    cy.intercept("POST", "/api/tasks", {
+      statusCode: 200,
+      fixture: "task-add.json",
+    }).as("APIaddTask");
+
+    let complete = true
+
+    cy.intercept("PATCH", "/api/tasks*", (req) => {
+      if (complete) {
+        req.reply({
+          task: {
+            task_complete: complete,
+            task_date: "2024-01-19",
+            task_id: 25,
+            task_name: "Cypress Task",
+            user_id: "1",
+          },
+        });
+      }
+    }).as("APIcompleteTask");
+
     cy.visit("http://localhost:3000");
 
     // Login
@@ -8,9 +39,12 @@ describe("TaskMaster Task Life Cycle Test", () => {
     cy.get('[id="password"]').type("password");
     cy.xpath('//button[text()="Login"]').click();
 
+    cy.wait("@APIlogin");
+
     // Open Tasks
     cy.xpath("//a[text()='Tasks']").click();
 
+    cy.wait("@APItasks");
     // Add new Task
 
     const taskName = "Cypress Task";
@@ -19,10 +53,14 @@ describe("TaskMaster Task Life Cycle Test", () => {
     cy.get('[id="dateDue"]').type("2024-01-31");
     cy.xpath("//button[text()='Add Task']").click();
 
+    cy.wait("@APIaddTask");
+
     cy.contains("td", taskName).parents("tr").should("exist");
 
     // Complete Task
     cy.contains("td", taskName).parents("tr").find('[id="Complete"]').click();
+
+    cy.wait("@APIcompleteTask");
 
     cy.contains("td", taskName)
       .parents("tr")
@@ -30,6 +68,10 @@ describe("TaskMaster Task Life Cycle Test", () => {
 
     // Reverse Complete
     cy.contains("td", taskName).parents("tr").find('[id="Complete"]').click();
+
+    complete = false;
+
+    cy.wait("@APIcompleteTask");
 
     cy.contains("td", taskName)
       .parents("tr")

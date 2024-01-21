@@ -17,7 +17,7 @@ const Header = (props) => {
       <header className={style.header}>
         <div className={style.containerLeft}>
           <GrTask className="text-white h-8 w-8" />
-          <span className={style.title}>Task Master - Test</span>
+          <span className={style.title}>Task Master</span>
         </div>
         <div className={style.containerRight}>
           <span className={style.username}>{username}</span>

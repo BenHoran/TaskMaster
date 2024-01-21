@@ -74,8 +74,6 @@ export const completeTask = (taskData, user, router) => {
   return async (dispatch) => {
     const api = createApi({ dispatch, user, router });
 
-    console.log(taskData)
-
     const patchData = async () => {
       const patchTask = [{
         operation: 'replace',
@@ -92,6 +90,31 @@ export const completeTask = (taskData, user, router) => {
     try {
       const taskResult = await patchData();
       dispatch(taskActions.completeTask(taskResult));
+    } catch (error) {
+      console.log(error);
+    }
+  };
+};
+
+export const editTask = (taskData, user, router) => {
+  return async (dispatch) => {
+    const api = createApi({ dispatch, user, router });
+
+    const putData = async () => {
+      const newTask = {
+        taskName,
+        dateDue
+      };
+      const response = await api.put("/api/tasks", newTask);
+      if (!response.status === 201) {
+        throw Error("Failed to update task.");
+      }
+      return response.data;
+    };
+
+    try {
+      const taskResult = await postData();
+      dispatch(taskActions.addTask(taskResult));
     } catch (error) {
       console.log(error);
     }

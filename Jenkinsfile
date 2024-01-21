@@ -6,6 +6,7 @@ pipeline {
         // DOCKER_REPO = '192.168.33.30:5000'
         DOCKER_REPO = 'ghcr.io'
         DOCKER_GITHUB = credentials('GITHUB_DOCKER')
+        NAMESPACE = 'tm'
     }
 
     stages {
@@ -23,23 +24,23 @@ pipeline {
             steps {
                 script {
                         sh "docker compose -f docker-compose.yaml build"
-                        sh "docker login ${DOCKER_REPO} -u ${env.GITHUB_USER} -p ${env.DOCKER_GITHUB}"
+                        sh "echo ${env.DOCKER_GITHUB} | docker login ${DOCKER_REPO} -u ${env.GITHUB_USER} --password-stdin"
 
-                        sh "docker image tag taskmaster_db ${DOCKER_REPO}/${env.GITHUB_USER}/taskmaster_db:latest"
+                        sh "docker image tag taskmaster_db ${DOCKER_REPO}/${env.NAMESPACE}/taskmaster_db:latest"
                         // sh "docker image tag taskmaster_db ${DOCKER_REPO}:5000/taskmaster_db:${env.BUILD_ID}"
-                        sh "docker image push --all-tags ${DOCKER_REPO}/${env.GITHUB_USER}/taskmaster_db"
+                        sh "docker image push --all-tags ${DOCKER_REPO}/${env.NAMESPACE}/taskmaster_db"
 
-                        sh "docker image tag taskmaster_flask ${DOCKER_REPO}/${env.GITHUB_USER}/taskmaster_flask:latest"
+                        sh "docker image tag taskmaster_flask ${DOCKER_REPO}/${env.NAMESPACE}/taskmaster_flask:latest"
                         // sh "docker image tag taskmaster_flask ${DOCKER_REPO}:5000/taskmaster_flask:${env.BUILD_ID}"
-                        sh "docker image push --all-tags ${DOCKER_REPO}/${env.GITHUB_USER}/taskmaster_flask"
+                        sh "docker image push --all-tags ${DOCKER_REPO}/${env.NAMESPACE}/taskmaster_flask"
 
-                        sh "docker image tag taskmaster_react ${DOCKER_REPO}/${env.GITHUB_USER}/taskmaster_react:latest"
+                        sh "docker image tag taskmaster_react ${DOCKER_REPO}/${env.NAMESPACE}/taskmaster_react:latest"
                         // sh "docker image tag taskmaster_react ${DOCKER_REPO}:5000/taskmaster_react:${env.BUILD_ID}"
-                        sh "docker image push --all-tags ${DOCKER_REPO}/${env.GITHUB_USER}/{env.GITHUB_OWNER}/taskmaster_react"
+                        sh "docker image push --all-tags ${DOCKER_REPO}/${env.NAMESPACE}/{env.GITHUB_OWNER}/taskmaster_react"
 
-                        sh "docker image tag taskmaster_web ${DOCKER_REPO}/${env.GITHUB_USER}/taskmaster_web:latest"
+                        sh "docker image tag taskmaster_web ${DOCKER_REPO}/${env.NAMESPACE}/taskmaster_web:latest"
                         // sh "docker image tag taskmaster_react ${DOCKER_REPO}:5000/taskmaster_react:${env.BUILD_ID}"
-                        sh "docker image push --all-tags ${DOCKER_REPO}/${env.GITHUB_USER}/taskmaster_web"
+                        sh "docker image push --all-tags ${DOCKER_REPO}/${env.NAMESPACE}/taskmaster_web"
                 }
                 // dir('docker/mysql') {
                 //     script {
