@@ -19,6 +19,9 @@ const taskSlice = createSlice({
     },
     completeTask: (state, action) => {
       return {...state, tasks: [...state.tasks.map((item) => {return item.task_id === action.payload.task.task_id ? action.payload.task : item})]}
+    },
+    editTask: (state, action) => {
+      return {...state, tasks: [...state.tasks.map((item) => {return item.task_id === action.payload.task.task_id ? action.payload.task : item})]}
     }
   },
 });

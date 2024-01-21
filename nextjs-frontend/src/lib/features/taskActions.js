@@ -113,8 +113,8 @@ export const editTask = (taskData, user, router) => {
     };
 
     try {
-      const taskResult = await postData();
-      dispatch(taskActions.addTask(taskResult));
+      const taskResult = await putData();
+      dispatch(taskActions.editTask(taskResult));
     } catch (error) {
       console.log(error);
     }

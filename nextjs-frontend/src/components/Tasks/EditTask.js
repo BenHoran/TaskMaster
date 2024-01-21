@@ -6,7 +6,7 @@ import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 
 import { editTask } from "@/lib/features/taskActions";
 
-const DeleteTask = (props) => {
+const EditTask = (props) => {
   const [error, setError] = useState("");
 
   const user = useAppSelector((state) => state.user);
@@ -52,4 +52,4 @@ const DeleteTask = (props) => {
   );
 };
 
-export default DeleteTask;
+export default EditTask;
